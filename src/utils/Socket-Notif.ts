@@ -21,12 +21,12 @@ export const initSocket = (userId: string): Socket => {
   socket.on("connect", () => {
     if (userId) {
       socket!.emit("join", userId);
-      // console.log(`Joined room: ${userId}`);
+      console.log(`Joined room: ${userId}`);
     }
   });
 
   socket.on("disconnect", () => {
-    // console.log("❌ Socket disconnected");
+    console.log("❌ Socket disconnected");
   });
 
   socket.on("New_Notif", (data: NotificationData) => {
