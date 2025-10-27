@@ -45,9 +45,13 @@ export function RandomProvider({ children }: { children: ReactNode }) {
     const [profiles, setProfiles] = useState<Profile[]>([]);
     const [isEmpty, setIsEmpty] = useState(false);
     const [loading, setLoading] = useState(true);
-    const [useAgeFilter, setUseAgeFilter] = useState(
+    const [useAgeFilter] = useState(
         () => localStorage.getItem("useAgeFilter") === "true"
     );
+
+    // const [useAgeFilter] = useState(
+    //     () => localStorage.getItem("useAgeFilter") === "true"
+    // );
     const [ageFilter, setAgeFilter] = useState<AgeFilter>({ min: 18, max: 35 });
 
     const getImageSrc = (imageBase64?: string): string => {

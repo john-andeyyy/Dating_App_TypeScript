@@ -1,4 +1,3 @@
-import React from "react";
 import { useAuth } from "../context/AuthContext";
 import axios from "axios";
 import { showToast } from "./ToastNotif";
@@ -28,10 +27,10 @@ export default function List({ id, name, age, bio, img, onRemoved }: ListProps) 
 
             if (onRemoved) onRemoved(id);
 
-            showToast("Removed", "warn", { position: "top-center" });
+            showToast("warn", "Removed", { position: "top-center" });
         } catch (err) {
             console.error("Error removing match:", err);
-            showToast("Failed to remove match", "error");
+            showToast("error", "Failed to remove match");
         }
     };
 

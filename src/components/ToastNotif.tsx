@@ -1,4 +1,4 @@
-import { toast, Zoom, Bounce } from "react-toastify";
+import { toast, Zoom } from "react-toastify";
 import type { ToastOptions } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
