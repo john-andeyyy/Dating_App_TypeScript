@@ -21,7 +21,6 @@ export default function AgeRangeModal({
     useAgeFilter,
     onToggleUseAgeFilter,
     radius,
-    onRadiusChange,
 }: AgeRangeModalProps) {
     const [localMin, setLocalMin] = useState<number>(minAge);
     const [localMax, setLocalMax] = useState<number>(maxAge);
@@ -45,7 +44,7 @@ export default function AgeRangeModal({
                     </button>
                     <button
                         className="btn bg-accent text-white"
-                        onClick={() => onApply(localMin, localMax, localRadius)} 
+                        onClick={() => onApply(localMin, localMax, localRadius)}
                     >
                         Apply
                     </button>

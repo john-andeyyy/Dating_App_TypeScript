@@ -29,13 +29,13 @@ export default function Home() {
     const { user } = useAuth();
     const { profiles, isEmpty, loading, ageFilter, updateAgeFilter, removeProfile, radius, updateRadius } = useRandomProvider();
 
-    
+
     const userId = user?._id;
     const Baseurl = import.meta.env.VITE_BASEURL as string;
     const accessToken = localStorage.getItem("AccessToken") || "";
     const isLoading = loading;
 
-    const [currentIndex, setCurrentIndex] = useState(0);
+    const [currentIndex] = useState(0);
     const [position, setPosition] = useState<Position>({ x: 0, y: 0 });
     const [isDragging, setIsDragging] = useState(false);
     const [isLeaving, setIsLeaving] = useState(false);
@@ -222,10 +222,10 @@ export default function Home() {
                 radius={radius}
                 useAgeFilter={useAgeFilter}
                 onToggleUseAgeFilter={handleToggleAgeFilter}
-                onRadiusChange={updateRadius} 
+                onRadiusChange={updateRadius}
                 onApply={(min, max, radiusValue) => {
                     updateAgeFilter(min, max);
-                    updateRadius(radiusValue); 
+                    updateRadius(radiusValue);
                     setShowModal(false);
                 }}
             />
