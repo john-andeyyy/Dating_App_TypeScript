@@ -1,5 +1,5 @@
-import { useState, } from "react";
-import type { ChangeEvent, FormEvent, } from "react";
+import { useState } from "react";
+import type { ChangeEvent, FormEvent } from "react";
 
 import { Navigate, useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -12,6 +12,8 @@ interface FormData {
     Age: string;
     Email: string;
     Password: string;
+    Latitude: string;
+    Longitude: string;
 }
 
 export default function Login() {
@@ -33,6 +35,8 @@ export default function Login() {
         Age: "",
         Email: "",
         Password: "",
+        Latitude: "",
+        Longitude: "",
     });
 
     const cleanForm = () => {
@@ -42,6 +46,8 @@ export default function Login() {
             Age: "",
             Email: "",
             Password: "",
+            Latitude: "",
+            Longitude: "",
         });
         setErrorMsg("");
         setProfileImage(null);
@@ -50,7 +56,7 @@ export default function Login() {
 
     const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: value }));
+        setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
     const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -60,13 +66,28 @@ export default function Login() {
             setProfileImageFile(file);
         }
     };
- // hanle Login and Signup submit
+
+    const getLocation = (): Promise<{ lat: string; lng: string }> => {
+        return new Promise((resolve, reject) => {
+            if (!navigator.geolocation) return reject("Not supported");
+
+            navigator.geolocation.getCurrentPosition(
+                (pos) =>
+                    resolve({
+                        lat: pos.coords.latitude.toString(),
+                        lng: pos.coords.longitude.toString(),
+                    }),
+                (err) => reject(err)
+            );
+        });
+    };
+
+    // Handle form submission for login and sign-up
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setIsLoading(true);
 
         if (isLogin) {
-            // LOGIN
             try {
                 const res = await axios.post(`${Baseurl}/user/auth/login`, {
                     Email: formData.Email,
@@ -78,7 +99,6 @@ export default function Login() {
                     localStorage.setItem("Email", res.data.Data.Email);
                     localStorage.setItem("AccessToken", res.data.Data.AccessToken);
                     localStorage.setItem("Refresh_Token", res.data.Data.Refresh_Token);
-                    localStorage.setItem("theme", "dark");
 
                     showToast("success", "Login successful");
                     await login();
@@ -86,17 +106,27 @@ export default function Login() {
                 }
             } catch (err: any) {
                 setErrorMsg(err.response?.data?.message || "Login failed");
-                showToast("error", "Error logging in");
+                // showToast("error", "Error logging in");
             }
         } else {
-            // SIGNUP
             try {
+
+                if (formData.Age && parseInt(formData.Age) < 18) {
+                    setErrorMsg("You must be at least 18 years old to sign up.");
+                    setIsLoading(false);
+                    return;
+                }
                 const formDataToSend = new FormData();
                 formDataToSend.append("Email", formData.Email);
                 formDataToSend.append("Name", formData.name);
                 formDataToSend.append("Password", formData.Password);
                 formDataToSend.append("Age", formData.Age);
                 formDataToSend.append("bio", formData.shortBio);
+
+                const { lat, lng } = await getLocation();
+                formDataToSend.append("Latitude", lat);
+                formDataToSend.append("Longitude", lng);
+
                 if (profileImageFile) formDataToSend.append("Image", profileImageFile);
 
                 const res = await axios.post(`${Baseurl}/user/auth/signup`, formDataToSend, {
@@ -116,171 +146,139 @@ export default function Login() {
     };
 
     return (
-        <div className="hero min-h-screen bg-base-200">
-            <div className="hero-content flex-col">
-                <div className="card w-full max-w-2xl shadow-2xl rounded-2xl p-8 bg-base-100 border border-info-content">
-                    <h1 className="text-3xl font-bold text-center mb-2 text-accent">
-                        {isLogin ? "Login" : "New User Sign-Up"}
-                    </h1>
-                    <p className="text-center text-info-content mb-6">
-                        {isLogin ? "Access your account" : "Register using your Email"}
-                    </p>
-                    <p className={`text-red-400 text-center transition-opacity duration-300 ${errorMsg ? 'opacity-100' : 'opacity-0'}`}>
+        <div className="min-h-screen flex items-center justify-center bg-base-200 p-4">
+            <div className="bg-base-100 shadow-2xl rounded-3xl p-8 w-full max-w-md">
+                <h1 className="text-3xl font-bold text-center text-accent mb-1">
+                    {isLogin ? "Welcome Back!" : "Create Account"}
+                </h1>
+                <p className="text-center text-base-content/70 mb-6">
+                    {isLogin ? "Sign in to continue" : "Sign up to get started"}
+                </p>
+
+                {errorMsg && (
+                    <div className="bg-red-100 text-red-600 text-center py-2 rounded-lg mb-4 animate-pulse">
                         {errorMsg}
-                    </p>
-
-                    <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {isLogin ? (
-                            <>
-                                
-                                <div className="md:col-span-2">
-                                    <label className="label font-semibold">Email</label>
-                                    <input
-                                        type="Email"
-                                        name="Email"
-                                        className="input input-bordered w-full bg-base-200"
-                                        placeholder="Enter your Email"
-                                        value={formData.Email}
-                                        onChange={handleChange}
-                                        required
-                                        readOnly={isLoading}
-                                    />
-                                </div>
-
-                                <div className="md:col-span-2">
-                                    <label className="label font-semibold">Password</label>
-                                    <input
-                                        type="password"
-                                        name="Password"
-                                        className="input input-bordered w-full bg-base-200"
-                                        placeholder="Enter password"
-                                        value={formData.Password}
-                                        onChange={handleChange}
-                                        required
-                                        readOnly={isLoading}
-                                    />
-                                </div>
-                            </>
-                        ) : (
-                            <>
-                                <div className="md:col-span-2">
-                                    <label className="label font-semibold">Email</label>
-                                    <input
-                                        type="Email"
-                                        name="Email"
-                                        className="input input-bordered w-full bg-base-200"
-                                        placeholder="Enter your Email"
-                                        value={formData.Email}
-                                        onChange={handleChange}
-                                        required
-                                        readOnly={isLoading}
-                                    />
-                                </div>
-
-                                <div className="md:col-span-2">
-                                    <label className="label font-semibold">Full Name</label>
-                                    <input
-                                        type="text"
-                                        name="name"
-                                        className="input input-bordered w-full bg-base-200"
-                                        placeholder="Enter your name"
-                                        value={formData.name}
-                                        onChange={handleChange}
-                                        required
-                                        readOnly={isLoading}
-                                    />
-                                </div>
-
-                                <div>
-                                    <label className="label font-semibold">Password</label>
-                                    <input
-                                        type="password"
-                                        name="Password"
-                                        className="input input-bordered w-full bg-base-200"
-                                        placeholder="Enter password"
-                                        value={formData.Password}
-                                        onChange={handleChange}
-                                        required
-                                        readOnly={isLoading}
-                                    />
-                                </div>
-
-                                <div>
-                                    <label className="label font-semibold">Age</label>
-                                    <input
-                                        type="Number"
-                                        name="Age"
-                                        className="input input-bordered w-full bg-base-200"
-                                        value={formData.Age}
-                                        onChange={handleChange}
-                                        required
-                                    />
-                                </div>
-
-                                <div className="md:col-span-2">
-                                    <label className="label font-semibold">Short Bio</label>
-                                    <textarea
-                                        name="shortBio"
-                                        className="textarea textarea-bordered w-full bg-base-200"
-                                        placeholder="Tell us about yourself..."
-                                        rows={3}
-                                        value={formData.shortBio}
-                                        onChange={handleChange}
-                                    />
-                                </div>
-
-                                <div className="md:col-span-2">
-                                    <label className="label font-semibold">Profile Picture</label>
-                                    <input
-                                        type="file"
-                                        accept="image/*"
-                                        className="file-input file-input-bordered w-full"
-                                        onChange={handleImageChange}
-                                    />
-                                    {profileImage && (
-                                        <div className="mt-3 flex justify-center">
-                                            <img
-                                                src={profileImage}
-                                                alt="Profile Preview"
-                                                className="w-24 h-24 object-cover rounded-full shadow-md"
-                                            />
-                                        </div>
-                                    )}
-                                </div>
-                            </>
-                        )}
-
-                        <div className="md:col-span-2 mt-4">
-                            <button
-                                className="btn w-full bg-accent text-white transition-colors duration-300"
-                                disabled={isLoading}
-                            >
-                                {isLoading ? (
-                                    <span className="loading loading-spinner loading-xl "></span>
-                                ) : (
-                                    isLogin ? "Login" : "Sign Up"
-                                )}
-                            </button>
-                        </div>
-                    </form>
-
-                    <div className="mt-6 text-center text-accent">
-                        <p className="text-sm">
-                            {isLogin
-                                ? "Don't have an account?"
-                                : "Already have an account?"}{" "}
-                            <button
-                                onClick={() => {
-                                    cleanForm();
-                                    setIsLogin(!isLogin);
-                                }}
-                                className="link link-primary font-semibold "
-                            >
-                                {isLogin ? "Sign Up" : "Login"}
-                            </button>
-                        </p>
                     </div>
-                </div>
+                )}
+
+                <form onSubmit={handleSubmit} className="space-y-4">
+                    <div>
+                        <label className="label font-semibold">Email</label>
+                        <input
+                            type="email"
+                            name="Email"
+                            placeholder="Enter your email"
+                            className="input input-bordered w-full bg-base-200 focus:bg-base-100 focus:border-accent transition rounded-lg px-4 py-3"
+                            value={formData.Email}
+                            onChange={handleChange}
+                            required
+                            readOnly={isLoading}
+                        />
+                    </div>
+
+                    <div>
+                        <label className="label font-semibold">Password</label>
+                        <input
+                            type="password"
+                            name="Password"
+                            placeholder="Enter password"
+                            className="input input-bordered w-full bg-base-200 focus:bg-base-100 focus:border-accent transition rounded-lg px-4 py-3"
+                            value={formData.Password}
+                            onChange={handleChange}
+                            required
+                            readOnly={isLoading}
+                        />
+                    </div>
+
+                    {!isLogin && (
+                        <>
+                            <div>
+                                <label className="label font-semibold">Full Name</label>
+                                <input
+                                    type="text"
+                                    name="name"
+                                    placeholder="Enter your full name"
+                                    className="input input-bordered w-full bg-base-200 focus:bg-base-100 focus:border-accent transition rounded-lg px-4 py-3 truncate"
+                                    value={formData.name}
+                                    onChange={handleChange}
+                                    required
+                                    readOnly={isLoading}
+                                />
+                            </div>
+
+                            <div>
+                                <label className="label font-semibold">Age</label>
+                                <input
+                                    type="number"
+                                    name="Age"
+                                    placeholder="Enter your age"
+                                    className="input input-bordered w-full bg-base-200 focus:bg-base-100 focus:border-accent transition rounded-lg px-4 py-3"
+                                    value={formData.Age}
+                                    onChange={handleChange}
+                                    required
+                                />
+                            </div>
+
+                            <div>
+                                <label className="label font-semibold">Short Bio</label>
+                                <textarea
+                                    name="shortBio"
+                                    placeholder="Tell us about yourself..."
+                                    className="textarea textarea-bordered w-full bg-base-200 focus:bg-base-100 focus:border-accent transition rounded-lg px-4 py-3"
+                                    rows={3}
+                                    value={formData.shortBio}
+                                    onChange={handleChange}
+                                />
+                            </div>
+
+                            <div>
+                                <label className="label font-semibold">Profile Picture</label>
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    className="file-input file-input-bordered w-full"
+                                    onChange={handleImageChange}
+                                />
+                                {profileImage && (
+                                    <div className="mt-3 flex justify-center">
+                                        <img
+                                            src={profileImage}
+                                            alt="Profile Preview"
+                                            className="w-28 h-28 object-cover rounded-full shadow-md"
+                                        />
+                                    </div>
+                                )}
+                            </div>
+                        </>
+                    )}
+
+                    <button
+                        type="submit"
+                        disabled={isLoading}
+                        className="btn w-full bg-accent hover:bg-accent-focus text-white font-semibold py-3 rounded-xl transition-all"
+                    >
+                        {isLoading ? (
+                            <span className="loading loading-spinner loading-lg"></span>
+                        ) : isLogin ? (
+                            "Login"
+                        ) : (
+                            "Sign Up"
+                        )}
+                    </button>
+                </form>
+
+                <p className="mt-6 text-center text-base-content/70 text-sm">
+                    {isLogin ? "Don't have an account?" : "Already have an account?"}{" "}
+                    <button
+                        onClick={() => {
+                            cleanForm();
+                            setIsLogin(!isLogin);
+                        }}
+                        className="text-accent font-semibold hover:underline"
+                    >
+                        {isLogin ? "Sign Up" : "Login"}
+                    </button>
+                </p>
             </div>
         </div>
     );

@@ -29,6 +29,8 @@ export default function Profile() {
     const [isChangingPass, setIsChangingPass] = useState(false);
     const [isLoading, setisLoading] = useState(true);
     const [previewPhoto, setPreviewPhoto] = useState<string | null>(null);
+    const [errorMsg, setErrorMsg] = useState("");
+
 
     const [Userdata, setUser] = useState<UserData>({
         id: user?._id || "",
@@ -78,6 +80,11 @@ export default function Profile() {
     // --- Handlers ---
     const handleCancel = () => {
         setIsEditing(false);
+        setErrorMsg("")
+        setPasswordData({
+            Password: "",
+            NewPass: "",
+        });
         if (user) {
             setUser({
                 id: user._id || "",
@@ -88,8 +95,10 @@ export default function Profile() {
                 image: user.Image || null,
                 photo: null,
             });
+            setPreviewPhoto(user.Image ? getImageSrc(user.Image) : null);
         }
     };
+
     // input change handler
     const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
@@ -150,6 +159,7 @@ export default function Profile() {
             setPasswordData({ Password: "", NewPass: "" });
         } catch (error: any) {
             console.error("error changing password:", error);
+            setErrorMsg(error.response?.data?.message || "Failed to change password");
             showToast("error", error.response?.data?.message || "Failed to change password");
         }
     };
@@ -173,130 +183,126 @@ export default function Profile() {
 
 
     return (
-        <div className=" p-4 pt-10 flex justify-center bg-base-200 overflow-auto h-screen items-start md:items-center ">
+        <div className="p-4 pt-10 flex justify-center bg-base-200 overflow-auto h-screen items-start md:items-center">
             <div className="bg-base-100 shadow-xl rounded-2xl p-6 max-w-4xl w-full">
-                <h1 className="text-2xl font-bold text-center mb-6 text-base-content">User Profile</h1>
+                <h1 className="text-3xl font-bold text-center mb-8 text-base-content">User Profile</h1>
 
                 {/* Profile Image */}
-                <div className="flex flex-col items-center gap-4 mb-6">
+                <div className="flex flex-col items-center gap-4 mb-8 relative">
                     <img
                         src={
                             previewPhoto ||
-                            getImageSrc(Userdata.image) || "https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small_2x/default-avatar-icon-of-social-media-user-vector.jpg"}
+                            getImageSrc(Userdata.image) ||
+                            "https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+                        }
                         alt="Profile"
-                        className="w-32 h-32 sm:w-40 sm:h-40 md:w-48 md:h-48 rounded-full object-cover"
+                        className="w-32 h-32 sm:w-40 sm:h-40 md:w-48 md:h-48 rounded-full object-cover border-4 border-base-300 shadow-md transition-transform duration-200 hover:scale-105"
                     />
-
                     {isEditing && (
-                        <label className="flex items-center gap-2 px-4 py-2 bg-base-300 text-base-content rounded-lg cursor-pointer hover:bg-base-200 transition-colors">
-                            Change Photo
-                            <input
-                                type="file"
-                                accept="image/*"
-                                onChange={handlePhotoChange}
-                                className="hidden"
-                            />
+                        <label className="absolute bottom-0 right-0 flex items-center gap-2 px-4 py-2 bg-accent text-white rounded-full cursor-pointer hover:bg-accent/90 transition-all shadow-lg">
+                            Change
+                            <input type="file" accept="image/*" onChange={handlePhotoChange} className="hidden" />
                         </label>
                     )}
-
                 </div>
 
-                {/* Change Password Mode */}
-                {isChangingPass ? (
-                    <form
-                        onSubmit={(e) => {
-                            e.preventDefault();
-                            handleChangePassword();
-                        }}
-                        className="space-y-4"
-                    >
-                        <div>
-                            <label className="block text-info-content text-sm mb-1 ">Current Password</label>
-                            <input
-                                type="password"
-                                name="Password"
-                                required
-                                value={passwordData.Password}
-                                onChange={(e) =>
-                                    setPasswordData({ ...passwordData, Password: e.target.value })
-                                }
-                                className={`${inputClass} bg-base-200`}
-                            />
-                        </div>
-
-                        <div>
-                            <label className="block text-info-content text-sm mb-1">New Password</label>
-                            <input
-                                type="password"
-                                name="NewPass"
-                                required
-                                value={passwordData.NewPass}
-                                onChange={(e) =>
-                                    setPasswordData({ ...passwordData, NewPass: e.target.value })
-                                }
-                                className={inputClass}
-                            />
-                        </div>
-
-                        <div className="flex flex-col sm:flex-row gap-3 justify-end mt-6">
-                            <button
-                                type="submit"
-                                className={`${buttonBase} bg-green-500 hover:bg-green-600 w-full sm:w-auto`}
-                            >
-                                Save Password
-                            </button>
-                            <button
-                                type="button"
-                                onClick={() => setIsChangingPass(false)}
-                                className={`${buttonBase}  bg-warning hover:bg-yellow-600 w-full sm:w-auto`}
-                            >
-                                Cancel
-                            </button>
-                        </div>
-                    </form>
-
-                ) : isEditing ? (
-                    <>
-                        {/* Edit Mode */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label className="block text-info-content text-sm mb-1">Full Name</label>
+                {/* Edit / Change Password / View Mode */}
+                <div className="space-y-6">
+                    {isChangingPass ? (
+                        <form
+                            onSubmit={(e) => {
+                                e.preventDefault();
+                                handleChangePassword();
+                            }}
+                            className="space-y-4 bg-base-200 p-6 rounded-xl shadow-inner"
+                        >
+                            <h2 className="text-xl font-semibold text-center mb-4 text-info-content">Change Password</h2>
+                            {errorMsg && (
+                                <div className="bg-red-100 text-red-600 text-center py-2 rounded-lg mb-4 animate-pulse">
+                                    {errorMsg}
+                                </div>
+                            )}
+                            <div className="space-y-3">
+                                <label className="block text-sm font-medium text-info-content">Current Password</label>
                                 <input
-                                    type="text"
-                                    name="name"
-                                    value={Userdata.name}
-                                    onChange={handleChange}
-                                    className={`${inputClass} capitalize`}
+                                    type="password"
+                                    name="Password"
+                                    required
+                                    value={passwordData.Password}
+                                    onChange={(e) => setPasswordData({ ...passwordData, Password: e.target.value })}
+                                    className={inputClass}
                                 />
                             </div>
-                            <div className="md:col-span-2">
-                                <label className="block text-info-content text-sm mb-1">Bio</label>
-                                <textarea
-                                    name="bio"
-                                    value={Userdata.bio}
-                                    onChange={handleChange}
-                                    className={`${inputClass} resize-none`}
+                            <div className="space-y-3">
+                                <label className="block text-sm font-medium text-info-content">New Password</label>
+                                <input
+                                    type="password"
+                                    name="NewPass"
+                                    required
+                                    value={passwordData.NewPass}
+                                    onChange={(e) => setPasswordData({ ...passwordData, NewPass: e.target.value })}
+                                    className={inputClass}
                                 />
                             </div>
+                            <div className="flex flex-col sm:flex-row gap-3 justify-end mt-4">
+                                <button
+                                    type="submit"
+                                    className={`${buttonBase} bg-green-500 hover:bg-green-600 w-full sm:w-auto`}
+                                >
+                                    Save Password
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setIsChangingPass(false),
+                                            handleCancel()
+                                    }}
+                                    className={`${buttonBase} bg-warning hover:bg-yellow-600 w-full sm:w-auto`}
+                                >
+                                    Cancel
+                                </button>
+                            </div>
+                        </form>
+                    ) : isEditing ? (
+                        <div className="space-y-6 bg-base-200 p-6 rounded-xl shadow-inner">
+                            <h2 className="text-xl font-semibold text-center mb-4 text-info-content">Edit Profile</h2>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-sm mb-1 text-info-content">Full Name</label>
+                                    <input
+                                        type="text"
+                                        name="name"
+                                        value={Userdata.name}
+                                        onChange={handleChange}
+                                        className={`${inputClass} capitalize`}
+                                    />
+                                </div>
+                                <div className="md:col-span-2">
+                                    <label className="block text-sm mb-1 text-info-content">Bio</label>
+                                    <textarea
+                                        name="bio"
+                                        value={Userdata.bio}
+                                        onChange={handleChange}
+                                        className={`${inputClass} resize-none`}
+                                    />
+                                </div>
+                            </div>
+                            <div className="flex flex-col sm:flex-row gap-3 justify-end mt-4">
+                                <button
+                                    onClick={handleSave}
+                                    className={`${buttonBase} bg-green-500 hover:bg-green-600 w-full sm:w-auto`}
+                                >
+                                    Save Changes
+                                </button>
+                                <button
+                                    onClick={handleCancel}
+                                    className={`${buttonBase} bg-warning hover:bg-yellow-600 w-full sm:w-auto`}
+                                >
+                                    Cancel
+                                </button>
+                            </div>
                         </div>
-                        <div className="flex flex-col sm:flex-row gap-3 justify-end mt-6">
-                            <button
-                                onClick={handleSave}
-                                className={`${buttonBase} bg-green-500 hover:bg-green-600 w-full sm:w-auto`}
-                            >
-                                Save Changes
-                            </button>
-                            <button
-                                onClick={() => handleCancel()}
-                                className={`${buttonBase} bg-warning hover:bg-yellow-600 w-full sm:w-auto`}
-                            >
-                                Cancel
-                            </button>
-                        </div>
-                    </>
-                ) : (
-                    <>
-                        {/* View Mode */}
+                    ) : (
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             {[
                                 { label: "Full Name", value: Userdata.name || "Not set" },
@@ -306,44 +312,43 @@ export default function Profile() {
                             ].map((item, idx) => (
                                 <div
                                     key={idx}
-                                    className={`bg-base-200 p-2 rounded-2xl ${item.fullWidth ? "md:col-span-2" : ""}`}
+                                    className={`bg-base-200 p-4 rounded-2xl shadow-sm ${item.fullWidth ? "md:col-span-2" : ""
+                                        }`}
                                 >
                                     <p className="text-sm text-base-content">{item.label}</p>
-                                    <p className="font-semibold wrap-break-words text-info-content">
+                                    <p className="font-semibold text-info-content break-words">
                                         {item.label === "Full Name" && typeof item.value === "string"
-                                            ? item.value.replace(/\b\w/g, c => c.toUpperCase())
+                                            ? item.value.replace(/\b\w/g, (c) => c.toUpperCase())
                                             : item.value}
                                     </p>
                                 </div>
                             ))}
-                        </div>
 
-                        <div className="flex flex-col sm:flex-row gap-3 justify-end mt-6">
-                            <button
-                                onClick={() => setIsEditing(true)}
-                                className="px-5 py-2 rounded-lg bg-accent  text-[#ffffff] font-semibold hover:bg-accent/90 w-full sm:w-auto transition-all duration-200"
-                            >
-                                Edit Profile
-                            </button>
-                            <button
-                                onClick={() => setIsChangingPass(true)}
-                                className="px-5 py-2 rounded-lg bg-accent  text-[#ffffff] font-semibold hover:bg-accent/90 w-full sm:w-auto transition-all duration-200"
-                            >
-                                Change Password
-                            </button>
-
-                            <div className="flex justify-center items-center h-full px-4">
-                                <div className="inline-block px-5 py-2 rounded-lg bg-accent text-black transition-all duration-200">
-                                    <ThemeToggle />
+                            {/* Action Buttons */}
+                            <div className="md:col-span-2 flex flex-col sm:flex-row gap-3 justify-end mt-4">
+                                <button
+                                    onClick={() => setIsEditing(true)}
+                                    className="px-5 py-2 rounded-lg bg-accent text-white font-semibold hover:bg-accent/90 w-full sm:w-auto transition-all duration-200"
+                                >
+                                    Edit Profile
+                                </button>
+                                <button
+                                    onClick={() => setIsChangingPass(true)}
+                                    className="px-5 py-2 rounded-lg bg-accent text-white font-semibold hover:bg-accent/90 w-full sm:w-auto transition-all duration-200"
+                                >
+                                    Change Password
+                                </button>
+                                <div className="flex justify-center items-center h-full px-4">
+                                    <div className="inline-block px-5 py-2 rounded-lg bg-accent text-black transition-all duration-200">
+                                        <ThemeToggle />
+                                    </div>
                                 </div>
                             </div>
-
-
                         </div>
-                    </>
-                )}
-
+                    )}
+                </div>
             </div>
-        </div >
+        </div>
+
     );
 }

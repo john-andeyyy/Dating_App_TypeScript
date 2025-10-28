@@ -11,7 +11,7 @@ interface UserData {
     name?: string;
     email?: string;
     age?: number;
-    [key: string]: any; 
+    [key: string]: any;
 }
 
 interface AuthContextType {
@@ -41,6 +41,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
     const login = async () => {
         const userid = localStorage.getItem("userId");
         const accessToken = localStorage.getItem("AccessToken");
+        const savedTheme = localStorage.getItem('theme');
+        localStorage.setItem("theme", savedTheme || "light");
         if (!userid || !accessToken) return;
 
         try {
@@ -95,7 +97,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }, []);
 
     const logout = () => {
+        const savedTheme = localStorage.getItem('theme');
         localStorage.clear();
+        localStorage.setItem("theme", savedTheme || "dark");
         setUserData({});
         setUser(null);
         showToast("success", "Logout successful");

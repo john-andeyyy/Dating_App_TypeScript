@@ -279,46 +279,60 @@ export default function Message() {
         <div className="flex flex-col lg:flex-row h-screen bg-base-200">
             {/* Left Panel (MatchedList) */}
             <div className="w-full lg:w-1/3 border-r border-base-300 flex flex-col">
-                <h2 className="p-4 text-lg md:text-xl font-bold border-b border-base-300 bg-base-100">
+                <h2 className="p-4 text-lg md:text-xl font-bold border-b border-base-300 bg-base-200">
                     Matches
                 </h2>
 
-{/* USER LIST */}
-                <div className="flex-grow overflow-y-auto p-3 space-y-2 ">
-                    {matchedList.map((match) => (
-                        <div
-                            key={match._id}
-                            onClick={() => handleSelectMatch(match)}
-                            className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-all bg-base-300 ${selectedMatch?._id === match._id
-                                ? "bg-accent/30 ring-2 ring-accent"
-                                : "hover:bg-base-100"
-                                }`}
-                        >
-                            <img
-                                src={
-                                    getImageSrc(match.image) ||
-                                    "https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-                                }
-                                alt={match.name}
-                                className="w-12 h-12 rounded-full object-cover border-2 border-base-300"
-                            />
-                            <div className="flex flex-col flex-1">
-                                <span className="font-semibold text-sm md:text-base truncate">
-                                    {match.name}
-                                </span>
-                                <span className="text-xs text-base-content/60 truncate">
-                                    {match.lastMessage
-                                        ? match.lastMessage.length > 10
-                                            ? match.lastMessage.slice(0, 10) + "..."
-                                            : match.lastMessage
-                                        : "No messages yet"}
-                                </span>
-
-
+                {/* USER LIST */}
+                <div className="flex-grow overflow-y-auto p-3 space-y-2">
+                    {matchedList.length > 0 ? (
+                        matchedList.map((match) => (
+                            <div
+                                key={match._id}
+                                onClick={() => handleSelectMatch(match)}
+                                className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-all bg-base-300 ${selectedMatch?._id === match._id
+                                        ? "bg-accent/30 ring-2 ring-accent"
+                                        : "hover:bg-base-100"
+                                    }`}
+                            >
+                                <img
+                                    src={
+                                        getImageSrc(match.image) ||
+                                        "https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+                                    }
+                                    alt={match.name}
+                                    className="w-12 h-12 rounded-full object-cover border-2 border-base-300"
+                                />
+                                <div className="flex flex-col flex-1">
+                                    <span className="font-semibold text-sm md:text-base truncate">
+                                        {match.name}
+                                    </span>
+                                    <span className="text-xs text-base-content/60 truncate">
+                                        {match.lastMessage
+                                            ? match.lastMessage.length > 10
+                                                ? match.lastMessage.slice(0, 10) + "..."
+                                                : match.lastMessage
+                                            : "No messages yet"}
+                                    </span>
+                                </div>
                             </div>
-                        </div>
-                    ))}
+                        ))
+                    ) : (
+                            <div className="flex flex-col items-center justify-center py-10">
+                                <div className="flex flex-col items-center gap-3 bg-base-200 rounded-xl p-6 shadow-md border border-base-300">
+                                    
+                                    <span className="text-lg font-semibold text-base-content/70">
+                                        Start matching!
+                                    </span>
+                                    <span className="text-sm text-base-content/50 text-center">
+                                        Browse profiles and find your next connection.
+                                    </span>
+                                </div>
+                            </div>
+
+                    )}
                 </div>
+
             </div>
 
             {/* Right Panel (Desktop only) */}
