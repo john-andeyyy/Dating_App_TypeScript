@@ -154,6 +154,7 @@ export default function Login() {
                 <p className="text-center text-base-content/70 mb-6">
                     {isLogin ? "Sign in to continue" : "Sign up to get started"}
                 </p>
+                
 
                 {errorMsg && (
                     <div className="bg-red-100 text-red-600 text-center py-2 rounded-lg mb-4 animate-pulse">

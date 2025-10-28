@@ -4,7 +4,7 @@ import axios from "axios";
 import { useAuth } from "../context/AuthContext";
 import { showToast } from "../components/ToastNotif";
 import { useRandomProvider } from "../context/RandomListContext";
-import AgeRangeModal from "../components/Modals/AgeRangeModal";
+import AgeRangeModal from "../components/Modals/FilterModal";
 import { FiSettings } from "react-icons/fi";
 
 interface Position {
@@ -27,8 +27,9 @@ interface FullScreenMessageProps {
 
 export default function Home() {
     const { user } = useAuth();
-    const { profiles, isEmpty, loading, ageFilter, updateAgeFilter, removeProfile } = useRandomProvider();
+    const { profiles, isEmpty, loading, ageFilter, updateAgeFilter, removeProfile, radius, updateRadius } = useRandomProvider();
 
+    
     const userId = user?._id;
     const Baseurl = import.meta.env.VITE_BASEURL as string;
     const accessToken = localStorage.getItem("AccessToken") || "";
@@ -42,6 +43,7 @@ export default function Home() {
     const [useAgeFilter, setUseAgeFilter] = useState(
         () => localStorage.getItem("useAgeFilter") === "true"
     );
+
 
     const startPos = useRef<Position>({ x: 0, y: 0 });
 
@@ -217,13 +219,18 @@ export default function Home() {
                 onClose={() => setShowModal(false)}
                 minAge={ageFilter.min}
                 maxAge={ageFilter.max}
+                radius={radius}
                 useAgeFilter={useAgeFilter}
                 onToggleUseAgeFilter={handleToggleAgeFilter}
-                onApply={(min, max) => {
+                onRadiusChange={updateRadius} 
+                onApply={(min, max, radiusValue) => {
                     updateAgeFilter(min, max);
+                    updateRadius(radiusValue); 
                     setShowModal(false);
                 }}
             />
+
+
         </div>
     );
 }

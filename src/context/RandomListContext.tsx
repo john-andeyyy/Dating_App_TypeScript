@@ -16,6 +16,9 @@ interface Profile {
     bio: string;
     image: string;
     age: number;
+    email: string;
+    longitude: string;
+    latitude: string;
 }
 
 interface AgeFilter {
@@ -31,6 +34,8 @@ interface RandomListContextType {
     isEmpty: boolean;
     ageFilter: AgeFilter;
     updateAgeFilter: (min: number, max: number) => void;
+    radius: number;
+    updateRadius: (value: number) => void;
 }
 
 const RandomListContext = createContext<RandomListContextType | undefined>(
@@ -50,7 +55,13 @@ export function RandomProvider({ children }: { children: ReactNode }) {
         () => localStorage.getItem("useAgeFilter") === "true"
     );
 
+    
     const [ageFilter, setAgeFilter] = useState<AgeFilter>({ min: 18, max: 35 });
+    const [radius, setRadius] = useState(10);
+
+    const updateRadius = (value: number) => {
+        setRadius(value);
+    };
 
     const getImageSrc = (imageBase64?: string): string => {
         if (!imageBase64)
@@ -63,13 +74,45 @@ export function RandomProvider({ children }: { children: ReactNode }) {
         setLoading(true);
 
         try {
+            // Kunin user location (browser geolocation)
+            let userLat = 0;
+            let userLng = 0;
+            try {
+                await new Promise<void>((resolve) => {
+                    navigator.geolocation.getCurrentPosition(
+                        (position) => {
+                            userLat = position.coords.latitude;
+                            userLng = position.coords.longitude;
+                            resolve();
+                        },
+                        (error) => {
+                            console.warn("Geolocation failed:", error.message);
+                            resolve(); // continue kahit walang location
+                        }
+                    );
+                });
+            } catch (err) {
+                console.warn("Geolocation error:", err);
+            }
+
+
             const url = useAgeFilter
                 ? `${Baseurl}/Matching/PeopleList/${userId}?minAge=${ageFilter.min}&maxAge=${ageFilter.max}`
                 : `${Baseurl}/Matching/PeopleList/${userId}`;
 
+
+            //  request para mag-send ng location + radius sa body
             const res = await axios.get(url, {
                 headers: { Authorization: `Bearer ${accessToken}` },
+                params: {
+                    latitude: userLat,
+                    longitude: userLng,
+                    radius
+                }
             });
+
+
+            console.log("url:", url);
 
             if (res.data?.data?.length && res.status === 200) {
                 const formattedProfiles: Profile[] = res.data.data.map((user: any) => ({
@@ -78,6 +121,9 @@ export function RandomProvider({ children }: { children: ReactNode }) {
                     bio: user.bio,
                     image: getImageSrc(user.Image),
                     age: user.age,
+                    email: user.Email,
+                    longitude: user.Longitude,
+                    latitude: user.Latitude,
                 }));
 
                 setProfiles(formattedProfiles.sort(() => Math.random() - 0.5));
@@ -94,6 +140,7 @@ export function RandomProvider({ children }: { children: ReactNode }) {
         }
     };
 
+
     //  removeProfile function
     const removeProfile = (id: string) => {
         setProfiles((prev) => prev.filter((p) => p.id !== id));
@@ -101,7 +148,7 @@ export function RandomProvider({ children }: { children: ReactNode }) {
 
     useEffect(() => {
         fetchProfiles();
-    }, [userId, ageFilter]);
+    }, [userId, ageFilter,radius]);
 
     const updateAgeFilter = (min: number, max: number) => {
         setAgeFilter({ min, max });
@@ -117,10 +164,13 @@ export function RandomProvider({ children }: { children: ReactNode }) {
                 isEmpty,
                 ageFilter,
                 updateAgeFilter,
+                radius,
+                updateRadius,
             }}
         >
             {children}
         </RandomListContext.Provider>
+
     );
 }
 
