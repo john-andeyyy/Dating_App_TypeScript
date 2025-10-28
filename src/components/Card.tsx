@@ -19,7 +19,7 @@ function Card({ name, bio, image, age, isVerified }: CardProps) {
             >
                 <figure className="relative">
                     <img src={image} alt={name} className="w-full h-48 sm:h-60 object-cover" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+                    <div className="absolute inset-0  from-black/40 to-transparent"></div>
 
                     {isVerified && (
                         <div className="absolute top-2 right-2 bg-white rounded-full p-1 shadow-lg">

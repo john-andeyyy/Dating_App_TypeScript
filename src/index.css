@@ -2,7 +2,7 @@
 @plugin "daisyui";
 
 @plugin "daisyui/theme" {
-  name: "dark-elegant";
+  name: "dark";
   default: false;
   prefersdark: true;
   color-scheme: "dark";
@@ -74,3 +74,8 @@
 button {
   cursor: pointer;
 }
+
+p::first-letter {
+  text-transform: uppercase;
+}
+

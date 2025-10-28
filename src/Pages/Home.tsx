@@ -1,4 +1,4 @@
-import  { useState, useRef } from "react";
+import { useState, useRef } from "react";
 import Card from "../components/Card";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
@@ -27,7 +27,7 @@ interface FullScreenMessageProps {
 
 export default function Home() {
     const { user } = useAuth();
-    const { profiles, isEmpty, loading, ageFilter, updateAgeFilter } = useRandomProvider();
+    const { profiles, isEmpty, loading, ageFilter, updateAgeFilter, removeProfile } = useRandomProvider();
 
     const userId = user?._id;
     const Baseurl = import.meta.env.VITE_BASEURL as string;
@@ -74,6 +74,7 @@ export default function Home() {
         const isLike = direction === "right";
 
         try {
+
             const res = await axios.post(
                 `${Baseurl}/Matching/Like_unlike`,
                 {
@@ -105,11 +106,14 @@ export default function Home() {
         });
 
         setTimeout(() => {
-            setCurrentIndex((prev) => prev + 1);
+            // Remove profile from global context
+            removeProfile(profile.id);
+            // Reset state
             setPosition({ x: 0, y: 0 });
             setIsLeaving(false);
         }, 300);
     };
+
 
     const likeOpacity = position.x > 0 ? Math.min(position.x / 120, 1) : 0;
     const nopeOpacity = position.x < 0 ? Math.min(-position.x / 120, 1) : 0;
@@ -227,7 +231,7 @@ export default function Home() {
 function FullScreenMessage({ title, subtitle }: FullScreenMessageProps) {
     return (
         <div className="flex items-center justify-center h-screen flex-col px-4 text-center text-gray-200">
-            <h2 className="text-3xl font-bold mb-4">{title}</h2>
+            <h2 className="text-3xl font-bold mb-4 text-info-content">{title}</h2>
             <p className="text-lg text-gray-400">{subtitle}</p>
         </div>
     );

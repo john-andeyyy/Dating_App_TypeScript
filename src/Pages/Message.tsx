@@ -28,27 +28,48 @@ export default function Message() {
     const [selectedMatch, setSelectedMatch] = useState<Match | null>(null);
     const [messages, setMessages] = useState<Record<string, MessageItem[]>>({});
     const [inputText, setInputText] = useState("");
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     const userId = user?._id as string | undefined;
     const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
-    // scroll to bottom when messages change
+    // scroll to bottom
     useEffect(() => {
         if (messagesEndRef.current) {
             messagesEndRef.current.scrollIntoView({ behavior: "auto" });
         }
     }, [messages, selectedMatch]);
 
-    // socket connection
+    // socket setup
     useEffect(() => {
         if (!userId) return;
-
         const newSocket = io(Baseurl, { transports: ["websocket"] });
         setSocket(newSocket);
 
+        const formatDateTime = (dateString: string) => {
+            const date = new Date(dateString);
+            const options: Intl.DateTimeFormatOptions = {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+                hour: "2-digit",
+                minute: "2-digit",
+                hour12: true,
+            };
+            // Example output: "October 28, 2025 at 08:48 PM"
+            return date.toLocaleString("en-US", options);
+        };
+
         newSocket.on("receive_message", (data: any) => {
             const { senderId, receiverId, message, createdAt } = data;
-            const otherId = senderId === userId ? receiverId : senderId;
+
+            // 🛑 Ignore if it's your own message (already handled locally)
+            if (senderId === userId) return;
+
+            const otherId = receiverId === userId ? senderId : receiverId;
+
+            const formatted = formatDateTime(createdAt);
+            const [datePart, timePart] = formatted.split(" at ");
 
             setMessages((prev) => ({
                 ...prev,
@@ -58,21 +79,24 @@ export default function Message() {
                         senderId,
                         receiverId,
                         text: message,
-                        date: new Date(createdAt).toLocaleDateString(),
-                        time: new Date(createdAt).toLocaleTimeString([], {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                        }),
+                        date: datePart,
+                        time: timePart,
                     },
                 ],
             }));
+
+            // Update last message preview
+            setMatchedList((prev) =>
+                prev.map((m) =>
+                    m._id === otherId ? { ...m, lastMessage: message } : m
+                )
+            );
         });
 
         return () => {
             newSocket.disconnect();
         };
     }, [userId, Baseurl]);
-
 
     // matched list
     useEffect(() => {
@@ -111,6 +135,9 @@ export default function Message() {
                     time: m.time,
                 })),
             }));
+
+            // open modal on mobile
+            if (window.innerWidth < 1024) setIsModalOpen(true);
         } catch (err) {
             console.error("Error fetching messages:", err);
         }
@@ -124,6 +151,41 @@ export default function Message() {
             receiverId: selectedMatch._id,
             message: inputText.trim(),
         };
+
+        const now = new Date();
+        const formatted = now.toLocaleString("en-US", {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: true,
+        });
+        const [datePart, timePart] = formatted.split(" at ");
+
+        // show immediately in chat
+        setMessages((prev) => ({
+            ...prev,
+            [selectedMatch._id]: [
+                ...(prev[selectedMatch._id] || []),
+                {
+                    senderId: userId!,
+                    receiverId: selectedMatch._id,
+                    text: newMessage.message,
+                    date: datePart,
+                    time: timePart,
+                },
+            ],
+        }));
+
+        setMatchedList((prev) =>
+            prev.map((m) =>
+                m._id === selectedMatch._id
+                    ? { ...m, lastMessage: newMessage.message }
+                    : m
+            )
+        );
+
         setInputText("");
 
         try {
@@ -135,6 +197,7 @@ export default function Message() {
         }
     };
 
+
     const getImageSrc = (imageBuffer?: { data?: ArrayBuffer }) => {
         if (!imageBuffer?.data) return null;
         const byteArray = new Uint8Array(imageBuffer.data);
@@ -142,103 +205,133 @@ export default function Message() {
         return URL.createObjectURL(blob);
     };
 
-    if (!userId || !userdata) {
-        return (
-            <div className="flex items-center justify-center h-screen">Loading...</div>
-        );
-    }
+    const ChatView = (
+        <div className="flex flex-col flex-1 h-full bg-base-100 p-4">
+            {selectedMatch ? (
+                <>
+                    <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center gap-3">
+                            <img
+                                src={
+                                    getImageSrc(selectedMatch.image) ||
+                                    "https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+                                }
+                                alt={selectedMatch.name}
+                                className="w-10 h-10 rounded-full object-cover"
+                            />
+                            <h3 className="font-semibold text-lg">{selectedMatch.name}</h3>
+                        </div>
+                        <button
+                            onClick={() => setIsModalOpen(false)}
+                            className="lg:hidden text-sm px-3 py-1 bg-accent text-white rounded-md"
+                        >
+                            Close
+                        </button>
+                    </div>
+
+                    <div className="flex flex-col flex-1 overflow-y-auto mb-4 space-y-2 bg-base-200 p-3 rounded-lg shadow-inner">
+                        {(messages[selectedMatch._id] || []).map((msg, i) => {
+                            const isSent = msg.senderId === userdata._id;
+                            return (
+                                <div
+                                    key={i}
+                                    className={`px-4 py-2 rounded-xl shadow-sm max-w-[80%] md:max-w-[70%] break-words ${isSent
+                                        ? "bg-accent text-white self-end"
+                                        : "bg-base-300 text-base-content self-start"
+                                        }`}
+                                >
+                                    <div className="text-sm">{msg.text}</div>
+                                    <div className="text-xs mt-1 text-right opacity-70">
+                                        {msg.date} • {msg.time}
+                                    </div>
+                                </div>
+                            );
+                        })}
+                        <div ref={messagesEndRef} />
+                    </div>
+
+                    <div className="flex gap-2">
+                        <textarea
+                            rows={1}
+                            value={inputText}
+                            onChange={(e) => setInputText(e.target.value)}
+                            className="flex-grow resize-none p-2 border rounded-lg focus:ring-2 focus:ring-accent bg-base-100 h-20"
+                            placeholder="Type your message..."
+                        />
+                        <button
+                            onClick={handleSend}
+                            className="px-4 bg-accent text-white font-semibold rounded-lg hover:bg-accent/90"
+                        >
+                            Send
+                        </button>
+                    </div>
+                </>
+            ) : (
+                <div className="flex items-center justify-center h-full text-base-content/60 italic">
+                    Select a match to start chatting
+                </div>
+            )}
+        </div>
+    );
+
 
     return (
-        <div className="flex flex-col lg:flex-row h-screen">
-            {/* Left Panel */}
-            <div className="w-full lg:w-1/3 border-r border-dark flex flex-col bg-base-200">
-                <h2 className="p-4 text-xl font-bold border-b border-dark text-base-content">
+        <div className="flex flex-col lg:flex-row h-screen bg-base-200">
+            {/* Left Panel (MatchedList) */}
+            <div className="w-full lg:w-1/3 border-r border-base-300 flex flex-col">
+                <h2 className="p-4 text-lg md:text-xl font-bold border-b border-base-300 bg-base-100">
                     Matches
                 </h2>
-                <div className="flex-grow overflow-y-auto">
-                    <ul className="bg-base-300">
-                        {matchedList.map((match) => (
-                            <li
-                                key={match._id}
-                                onClick={() => handleSelectMatch(match)}
-                                className={`cursor-pointer flex items-center gap-3 px-4 py-3 hover:bg-base-100/20 transition-colors rounded 
-                  ${selectedMatch?._id === match._id
-                                        ? "bg-base-100/20 font-semibold text-white"
-                                        : ""
-                                    }`}
-                            >
-                                <img
-                                    src={
-                                        getImageSrc(match.image) ||
-                                        "https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-                                    }
-                                    alt={match.name}
-                                    className="w-10 h-10 rounded-full object-cover border-2 border-dark"
-                                />
-                                <div className="flex flex-col flex-1">
-                                    <span className="text-base-content/80">{match.name}</span>
-                                    <span className="text-xs truncate max-w-[160px]">
-                                        {match.lastMessage || "No messages yet"}
-                                    </span>
-                                </div>
-                            </li>
-                        ))}
-                    </ul>
+
+{/* USER LIST */}
+                <div className="flex-grow overflow-y-auto p-3 space-y-2 ">
+                    {matchedList.map((match) => (
+                        <div
+                            key={match._id}
+                            onClick={() => handleSelectMatch(match)}
+                            className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-all bg-base-300 ${selectedMatch?._id === match._id
+                                ? "bg-accent/30 ring-2 ring-accent"
+                                : "hover:bg-base-100"
+                                }`}
+                        >
+                            <img
+                                src={
+                                    getImageSrc(match.image) ||
+                                    "https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+                                }
+                                alt={match.name}
+                                className="w-12 h-12 rounded-full object-cover border-2 border-base-300"
+                            />
+                            <div className="flex flex-col flex-1">
+                                <span className="font-semibold text-sm md:text-base truncate">
+                                    {match.name}
+                                </span>
+                                <span className="text-xs text-base-content/60 truncate">
+                                    {match.lastMessage
+                                        ? match.lastMessage.length > 10
+                                            ? match.lastMessage.slice(0, 10) + "..."
+                                            : match.lastMessage
+                                        : "No messages yet"}
+                                </span>
+
+
+                            </div>
+                        </div>
+                    ))}
                 </div>
             </div>
 
-            {/* Right Panel */}
-            <div className="flex flex-col flex-1 p-4 lg:p-6 bg-base-200">
-                {selectedMatch ? (
-                    <>
-                        <h3 className="text-sm lg:text-2xl font-bold mb-4">
-                            Messages with{" "}
-                            <span className="text-base-content">{selectedMatch.name}</span>
-                        </h3>
+            {/* Right Panel (Desktop only) */}
+            <div className="hidden lg:flex flex-1">{ChatView}</div>
 
-                        <div className="flex-1 overflow-y-auto mb-4 p-4 bg-base-100/30 rounded-lg shadow-inner flex flex-col gap-2 max-h-[90vh] lg:h-[80vh]">
-                            {(messages[selectedMatch._id] || []).map((msg, i) => {
-                                const isSent = msg.senderId === userdata._id;
-                                return (
-                                    <div
-                                        key={i}
-                                        className={`px-4 py-2 rounded-xl shadow-sm max-w-56 lg:max-w-3xl ${isSent
-                                            ? "bg-base-300 self-end"
-                                            : "bg-base-300 self-start"
-                                            }`}
-                                    >
-                                        <div className="text-sm break-words">{msg.text}</div>
-                                        <div className="text-xs text-base-content mt-1 text-right">
-                                            {msg.date} • {msg.time}
-                                        </div>
-                                    </div>
-                                );
-                            })}
-                            <div ref={messagesEndRef} />
-                        </div>
-
-                        <div className="flex gap-2">
-                            <textarea
-                                rows={2}
-                                value={inputText}
-                                onChange={(e) => setInputText(e.target.value)}
-                                className="flex-grow resize-none p-2 border rounded focus:ring-2 focus:ring-accent bg-base-200"
-                                placeholder="Type your message..."
-                            />
-                            <button
-                                onClick={handleSend}
-                                className="px-10 bg-accent font-semibold hover:bg-accent/90 text-white"
-                            >
-                                Send
-                            </button>
-                        </div>
-                    </>
-                ) : (
-                    <div className="flex items-center justify-center h-full italic">
-                        Select a match to view messages
+            {/* Modal for Mobile */}
+            {isModalOpen && (
+                <div className="fixed inset-0 bg-black/70 flex justify-center items-center z-50 lg:hidden ">
+                    <div className="bg-base-100 w-full h-full sm:w-[95%] sm:h-[90%] rounded-none sm:rounded-lg overflow-hidden flex flex-col">
+                        {ChatView}
                     </div>
-                )}
-            </div>
+                </div>
+            )}
         </div>
     );
 }

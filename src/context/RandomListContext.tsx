@@ -4,9 +4,9 @@ import {
     useState,
     useContext,
     useEffect,
-
 } from "react";
 import type { ReactNode } from "react";
+
 import { showToast } from "../components/ToastNotif";
 import { useAuth } from "./AuthContext";
 
@@ -26,6 +26,7 @@ interface AgeFilter {
 interface RandomListContextType {
     profiles: Profile[];
     refresh: () => Promise<void>;
+    removeProfile: (id: string) => void;
     loading: boolean;
     isEmpty: boolean;
     ageFilter: AgeFilter;
@@ -49,9 +50,6 @@ export function RandomProvider({ children }: { children: ReactNode }) {
         () => localStorage.getItem("useAgeFilter") === "true"
     );
 
-    // const [useAgeFilter] = useState(
-    //     () => localStorage.getItem("useAgeFilter") === "true"
-    // );
     const [ageFilter, setAgeFilter] = useState<AgeFilter>({ min: 18, max: 35 });
 
     const getImageSrc = (imageBase64?: string): string => {
@@ -62,7 +60,6 @@ export function RandomProvider({ children }: { children: ReactNode }) {
 
     const fetchProfiles = async (): Promise<void> => {
         if (!userId) return;
-
         setLoading(true);
 
         try {
@@ -97,6 +94,11 @@ export function RandomProvider({ children }: { children: ReactNode }) {
         }
     };
 
+    //  removeProfile function
+    const removeProfile = (id: string) => {
+        setProfiles((prev) => prev.filter((p) => p.id !== id));
+    };
+
     useEffect(() => {
         fetchProfiles();
     }, [userId, ageFilter]);
@@ -107,7 +109,15 @@ export function RandomProvider({ children }: { children: ReactNode }) {
 
     return (
         <RandomListContext.Provider
-            value={{ profiles, refresh: fetchProfiles, loading, isEmpty, ageFilter, updateAgeFilter }}
+            value={{
+                profiles,
+                refresh: fetchProfiles,
+                removeProfile,
+                loading,
+                isEmpty,
+                ageFilter,
+                updateAgeFilter,
+            }}
         >
             {children}
         </RandomListContext.Provider>
@@ -116,6 +126,7 @@ export function RandomProvider({ children }: { children: ReactNode }) {
 
 export const useRandomProvider = (): RandomListContextType => {
     const context = useContext(RandomListContext);
-    if (!context) throw new Error("useRandomProvider must be used within RandomProvider");
+    if (!context)
+        throw new Error("useRandomProvider must be used within RandomProvider");
     return context;
 };

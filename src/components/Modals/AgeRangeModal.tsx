@@ -35,11 +35,11 @@ export default function AgeRangeModal({
             title="Change Age Range"
             actions={
                 <>
-                    <button className="btn btn-gray" onClick={onClose}>
+                    <button className="btn bg-accent text-white" onClick={onClose}>
                         Cancel
                     </button>
                     <button
-                        className="btn btn-pink"
+                        className="btn bg-accent text-white"
                         onClick={() => onApply(Number(localMin), Number(localMax))}
                     >
                         Apply
@@ -55,7 +55,7 @@ export default function AgeRangeModal({
                     className="checkbox checkbox-accent"
                     id="ageFilterCheckbox"
                 />
-                <label htmlFor="ageFilterCheckbox" className="text-gray-300">
+                <label htmlFor="ageFilterCheckbox" >
                     Use Age Filter
                 </label>
             </div>
@@ -63,7 +63,7 @@ export default function AgeRangeModal({
             {useAgeFilter && (
                 <div className="flex justify-between gap-4 mt-4">
                     <div className="flex flex-col">
-                        <label className="text-gray-300 mb-1">Min Age</label>
+                        <label className=" mb-1">Min Age</label>
                         <input
                             type="number"
                             value={localMin}
@@ -71,12 +71,12 @@ export default function AgeRangeModal({
                             min={18}
                             max={99}
                             onChange={(e) => setLocalMin(Number(e.target.value))}
-                            className="input input-bordered w-24 rounded-lg focus:border-pink-500 focus:ring focus:ring-pink-500/20 text-white bg-gray-700"
+                            className="input input-bordered w-24 rounded-lg focus:border-pink-500 focus:ring focus:ring-pink-500/20  "
                         />
                     </div>
 
                     <div className="flex flex-col">
-                        <label className="text-gray-300 mb-1">Max Age</label>
+                        <label className=" mb-1">Max Age</label>
                         <input
                             type="number"
                             value={localMax}
@@ -84,7 +84,7 @@ export default function AgeRangeModal({
                             min={18}
                             max={99}
                             onChange={(e) => setLocalMax(Number(e.target.value))}
-                            className="input input-bordered w-24 rounded-lg focus:border-pink-500 focus:ring focus:ring-pink-500/20 text-white bg-gray-700"
+                            className="input input-bordered w-24 rounded-lg focus:border-pink-500 focus:ring focus:ring-pink-500/20 "
                         />
                     </div>
                 </div>

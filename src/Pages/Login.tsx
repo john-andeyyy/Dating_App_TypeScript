@@ -1,5 +1,5 @@
-import  { useState } from "react";
-import type { FormEvent, ChangeEvent } from "react";
+import { useState, } from "react";
+import type { ChangeEvent, FormEvent, } from "react";
 
 import { Navigate, useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -9,10 +9,9 @@ import { showToast } from "../components/ToastNotif";
 interface FormData {
     name: string;
     shortBio: string;
-    Birthday: string;
-    email: string;
+    Age: string;
+    Email: string;
     Password: string;
-    Phonenumber: string;
 }
 
 export default function Login() {
@@ -24,7 +23,6 @@ export default function Login() {
 
     const [isLoading, setIsLoading] = useState(false);
     const [isLogin, setIsLogin] = useState(true);
-    const [registerWith, setRegisterWith] = useState<"email" | "mobile">("email");
     const [errorMsg, setErrorMsg] = useState("");
     const [profileImage, setProfileImage] = useState<string | null>(null);
     const [profileImageFile, setProfileImageFile] = useState<File | null>(null);
@@ -32,20 +30,18 @@ export default function Login() {
     const [formData, setFormData] = useState<FormData>({
         name: "",
         shortBio: "",
-        Birthday: "",
-        email: "",
+        Age: "",
+        Email: "",
         Password: "",
-        Phonenumber: "",
     });
 
-    const cleanform = () => {
+    const cleanForm = () => {
         setFormData({
             name: "",
             shortBio: "",
-            Birthday: "",
-            email: "",
+            Age: "",
+            Email: "",
             Password: "",
-            Phonenumber: "",
         });
         setErrorMsg("");
         setProfileImage(null);
@@ -64,23 +60,25 @@ export default function Login() {
             setProfileImageFile(file);
         }
     };
-
+ // hanle Login and Signup submit
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setIsLoading(true);
 
         if (isLogin) {
+            // LOGIN
             try {
                 const res = await axios.post(`${Baseurl}/user/auth/login`, {
-                    Username: formData.name,
+                    Email: formData.Email,
                     Password: formData.Password,
                 });
 
                 if (res.status === 200) {
                     localStorage.setItem("userId", res.data.Data._id);
-                    localStorage.setItem("username", res.data.Data.Username);
+                    localStorage.setItem("Email", res.data.Data.Email);
                     localStorage.setItem("AccessToken", res.data.Data.AccessToken);
                     localStorage.setItem("Refresh_Token", res.data.Data.Refresh_Token);
+                    localStorage.setItem("theme", "dark");
 
                     showToast("success", "Login successful");
                     await login();
@@ -91,13 +89,13 @@ export default function Login() {
                 showToast("error", "Error logging in");
             }
         } else {
+            // SIGNUP
             try {
                 const formDataToSend = new FormData();
-                formDataToSend.append("Username", formData.email);
+                formDataToSend.append("Email", formData.Email);
                 formDataToSend.append("Name", formData.name);
                 formDataToSend.append("Password", formData.Password);
-                formDataToSend.append("Phonenumber", formData.Phonenumber);
-                formDataToSend.append("Birthday", formData.Birthday);
+                formDataToSend.append("Age", formData.Age);
                 formDataToSend.append("bio", formData.shortBio);
                 if (profileImageFile) formDataToSend.append("Image", profileImageFile);
 
@@ -107,7 +105,7 @@ export default function Login() {
 
                 showToast("success", res.data.message);
                 setIsLogin(true);
-                cleanform();
+                cleanForm();
             } catch (err: any) {
                 setErrorMsg(err.response?.data?.message || "Sign-up failed");
                 showToast("error", "Error signing up");
@@ -119,58 +117,33 @@ export default function Login() {
 
     return (
         <div className="hero min-h-screen bg-base-200">
-            <div className="hero-content flex-col ">
-                <div className="card w-full max-w-2xl shadow-2xl rounded-2xl p-8 bg-base-100 border-1 border-info-content">
+            <div className="hero-content flex-col">
+                <div className="card w-full max-w-2xl shadow-2xl rounded-2xl p-8 bg-base-100 border border-info-content">
                     <h1 className="text-3xl font-bold text-center mb-2 text-accent">
                         {isLogin ? "Login" : "New User Sign-Up"}
                     </h1>
                     <p className="text-center text-info-content mb-6">
-                        {isLogin
-                            ? "Access your account"
-                            : `Register using your ${registerWith}`}
+                        {isLogin ? "Access your account" : "Register using your Email"}
                     </p>
                     <p className={`text-red-400 text-center transition-opacity duration-300 ${errorMsg ? 'opacity-100' : 'opacity-0'}`}>
                         {errorMsg}
                     </p>
 
-
-                    {!isLogin && (
-                        <div className="flex justify-center gap-4 mb-4">
-                            <button
-                                type="button"
-                                className={`btn btn-sm ${registerWith === "email" ? "btn-neutral" : "btn-outline"
-                                    }`}
-                                onClick={() => setRegisterWith("email")}
-                            >
-                                Email
-                            </button>
-                            <button
-                                type="button"
-                                className={`btn btn-sm ${registerWith === "mobile" ? "btn-neutral" : "btn-outline"
-                                    }`}
-                                onClick={() => setRegisterWith("mobile")}
-                            >
-                                Mobile
-                            </button>
-                        </div>
-                    )}
-
                     <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
-
                         {isLogin ? (
                             <>
+                                
                                 <div className="md:col-span-2">
-                                    <label className="label font-semibold">Email/Phone Number</label>
+                                    <label className="label font-semibold">Email</label>
                                     <input
-                                        type="text"
-                                        name="name"
+                                        type="Email"
+                                        name="Email"
                                         className="input input-bordered w-full bg-base-200"
-                                        placeholder="Enter Email/ Phone Number"
-                                        value={formData.name}
+                                        placeholder="Enter your Email"
+                                        value={formData.Email}
                                         onChange={handleChange}
                                         required
                                         readOnly={isLoading}
-
                                     />
                                 </div>
 
@@ -180,66 +153,44 @@ export default function Login() {
                                         type="password"
                                         name="Password"
                                         className="input input-bordered w-full bg-base-200"
-                                        placeholder="Enter Password"
+                                        placeholder="Enter password"
                                         value={formData.Password}
                                         onChange={handleChange}
                                         required
                                         readOnly={isLoading}
-
                                     />
                                 </div>
                             </>
                         ) : (
                             <>
                                 <div className="md:col-span-2">
-                                    {/* <label className="label font-semibold">
-                                        {registerWith === "email" ? "Email" : "Mobile Number"}
-                                    </label> */}
-                                    <label className="label font-semibold">
-                                        {registerWith === "email" ? "Email" : "Mobile Number"}
-                                    </label>
+                                    <label className="label font-semibold">Email</label>
                                     <input
-                                        type={registerWith === "email" ? "email" : "tel"}
-                                        name={registerWith === "email" ? "email" : "mobile"}
+                                        type="Email"
+                                        name="Email"
                                         className="input input-bordered w-full bg-base-200"
-                                        placeholder={`Enter your ${registerWith === "email" ? "email" : "mobile number"}`}
-                                        value={registerWith === "email" ? formData.email : formData.Phonenumber}
-                                        onChange={(e) => {
-                                            if (registerWith === "email") {
-                                                setFormData({ ...formData, email: e.target.value });
-                                            } else {
-                                                setFormData({
-                                                    ...formData,
-                                                    Phonenumber: e.target.value.replace(/\D/g, "") // only numbers
-                                                });
-                                            }
-                                        }}
-                                        {...(registerWith !== "email" && {
-                                            pattern: "[0-9]{11}",
-                                            maxLength: 11,
-                                            inputMode: "numeric"
-                                        })}
+                                        placeholder="Enter your Email"
+                                        value={formData.Email}
+                                        onChange={handleChange}
                                         required
                                         readOnly={isLoading}
-
                                     />
-
-
-                                    <div>
-                                        <label className="label font-semibold">Full Name</label>
-                                        <input
-                                            type="text"
-                                            name="name"
-                                            className="input input-bordered w-full bg-base-200"
-                                            placeholder="Enter your name"
-                                            value={formData.name}
-                                            onChange={handleChange}
-                                            required
-                                            readOnly={isLoading}
-
-                                        />
-                                    </div>
                                 </div>
+
+                                <div className="md:col-span-2">
+                                    <label className="label font-semibold">Full Name</label>
+                                    <input
+                                        type="text"
+                                        name="name"
+                                        className="input input-bordered w-full bg-base-200"
+                                        placeholder="Enter your name"
+                                        value={formData.name}
+                                        onChange={handleChange}
+                                        required
+                                        readOnly={isLoading}
+                                    />
+                                </div>
+
                                 <div>
                                     <label className="label font-semibold">Password</label>
                                     <input
@@ -253,13 +204,14 @@ export default function Login() {
                                         readOnly={isLoading}
                                     />
                                 </div>
+
                                 <div>
-                                    <label className="label font-semibold">Birthday</label>
+                                    <label className="label font-semibold">Age</label>
                                     <input
-                                        type="date"
-                                        name="Birthday"
+                                        type="Number"
+                                        name="Age"
                                         className="input input-bordered w-full bg-base-200"
-                                        value={formData.Birthday}
+                                        value={formData.Age}
                                         onChange={handleChange}
                                         required
                                     />
@@ -274,8 +226,7 @@ export default function Login() {
                                         rows={3}
                                         value={formData.shortBio}
                                         onChange={handleChange}
-                                    // required
-                                    ></textarea>
+                                    />
                                 </div>
 
                                 <div className="md:col-span-2">
@@ -300,30 +251,30 @@ export default function Login() {
                         )}
 
                         <div className="md:col-span-2 mt-4">
-                            <button className="btn w-full bg-accent text-black transition-colors duration-300">
+                            <button
+                                className="btn w-full bg-accent text-white transition-colors duration-300"
+                                disabled={isLoading}
+                            >
                                 {isLoading ? (
-                                    <div className="flex justify-center items-center h-full">
-                                        <span className="loading loading-spinner loading-xl"></span>
-                                    </div>
+                                    <span className="loading loading-spinner loading-xl "></span>
                                 ) : (
-                                    <> {isLogin ? "Login" : "Sign Up"}</>
+                                    isLogin ? "Login" : "Sign Up"
                                 )}
                             </button>
                         </div>
                     </form>
 
-                    <div className="mt-6 text-center text-white">
-                        <p className="text-sm ">
+                    <div className="mt-6 text-center text-accent">
+                        <p className="text-sm">
                             {isLogin
                                 ? "Don't have an account?"
                                 : "Already have an account?"}{" "}
                             <button
                                 onClick={() => {
-                                    cleanform();
+                                    cleanForm();
                                     setIsLogin(!isLogin);
-
                                 }}
-                                className="link link-primary font-semibold"
+                                className="link link-primary font-semibold "
                             >
                                 {isLogin ? "Sign Up" : "Login"}
                             </button>

@@ -16,12 +16,15 @@ interface ListProps {
 export default function List({ id, name, age, bio, img, onRemoved }: ListProps) {
     const { user } = useAuth();
     const userId: string = user?._id || "";
+    const accessToken = localStorage.getItem("AccessToken");
 
     const handleRemoveClick = async () => {
         try {
             const res = await axios.put(`${Baseurl}/Matching/unMatch`, {
                 Userid: userId,
                 MatchingId: id,
+            }, {
+                headers: { Authorization: `Bearer ${accessToken}` },
             });
             console.log("Remove response:", res.data);
 
@@ -35,38 +38,34 @@ export default function List({ id, name, age, bio, img, onRemoved }: ListProps) 
     };
 
     return (
-        <div className="rounded-lg shadow-md p-3 sm:p-4 flex items-center gap-3 sm:gap-4 hover:shadow-lg transition bg-base-100">
-            <img
-                className="w-12 h-12 sm:w-16 sm:h-16 rounded-md object-cover"
-                src={img}
-                alt={`${name}'s profile`}
-            />
-
-            <div className="flex-1 min-w-0">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:gap-2 truncate">
-                    <h2 className="text-sm sm:text-lg font-semibold text-base-content truncate">
-                        {name}
-                    </h2>
-                    <span className="text-xs sm:text-sm text-info-content shrink-0">
-                        {age} yrs old
-                    </span>
-                </div>
-                <p className="text-xs sm:text-sm text-info-content mt-1 line-clamp-2 sm:line-clamp-none">
-                    {bio}
-                </p>
-            </div>
-
-            <div className="flex-shrink-0">
+        <div className="card  sm:w-80 md:w-96 bg-base-100 shadow-md hover:shadow-xl transition-all duration-300 border border-base-300">
+            {/* Image Section */}
+            <figure className="relative">
+                <img
+                    src={
+                        img ||
+                        "https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+                    }
+                    alt={`${name}'s profile`}
+                    className=" h-50  object-cover"
+                />
                 <button
-                    className="btn btn-xs sm:btn-sm btn-error text-white flex items-center justify-center"
                     onClick={handleRemoveClick}
+                    className="absolute top-2 right-2 btn btn-error btn-sm text-white"
                 >
-                    <img
-                        src="../../delete.png"
-                        alt="Remove"
-                        className="w-3 h-3 sm:w-4 sm:h-4"
-                    />
+                    Unmatch
                 </button>
+            </figure>
+
+            {/* Info Section */}
+            <div className="card-body p-4">
+                <h2 className="card-title text-lg font-semibold text-base-content">
+                    {name}
+                </h2>
+                <p className="text-sm text-base-content/70 font-normal">
+                    &nbsp;• {age} yrs old
+                </p>
+                <p className="text-sm text-base-content/70 line-clamp-3">{bio}</p>
             </div>
         </div>
     );

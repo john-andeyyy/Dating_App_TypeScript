@@ -18,31 +18,36 @@ export default function MatchList() {
                 All current matches
             </h1>
 
-            <div className="flex-grow overflow-y-auto p-4 space-y-4">
+            <div className="grow overflow-y-auto p-4">
                 {matchesList.length > 0 ? (
-                    matchesList.map((match: {
-                        id: string;
-                        _id?: string;
-                        name: string;
-                        age: string | number; 
-                        bio: string;
-                        img: string;
-                    }) => (
-                        <List
-                            key={match._id ?? match.id}
-                            id={match.id}
-                            name={match.name}
-                            age={Number(match.age)} bio={match.bio}
-                            img={match.img}
-                            onRemoved={removeMatch}
-                        />
-                    ))
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                        {matchesList.map((match: {
+                            id: string;
+                            _id?: string;
+                            name: string;
+                            age: string | number;
+                            bio: string;
+                            img: string;
+                        }) => (
+                            <List
+                                key={match._id ?? match.id}
+                                id={match.id}
+                                name={match.name}
+                                age={Number(match.age)}
+                                bio={match.bio}
+                                img={match.img}
+                                onRemoved={removeMatch}
+                            />
+                        ))}
+                    </div>
                 ) : (
-                    <div className="flex items-center justify-center h-full text-info-content">
-                        No matches found
+                    <div className="flex flex-col items-center justify-center h-full text-info-content">
+                        <h2 className="text-3xl font-bold mb-4">No matches found</h2>
+                        <p className="text-lg text-gray-400">Start to match</p>
                     </div>
                 )}
             </div>
+
         </div>
     );
 }

@@ -38,7 +38,7 @@ export default function Sidebar() {
                 <label
                     htmlFor="sidebar-drawer"
                     className="btn btn-square drawer-button lg:hidden text-2xl text-base-content  
-          hover:bg-[#6EACDA] transition-colors m-1"
+                    hover:bg-[#6EACDA] transition-colors m-1"
                 >
                     ☰
                 </label>
@@ -83,6 +83,7 @@ export default function Sidebar() {
                         >
                             Logout
                         </button>
+                        {/* <input type="checkbox" value="light" className="toggle theme-controller" /> */}
                     </div>
                 </aside>
             </div>

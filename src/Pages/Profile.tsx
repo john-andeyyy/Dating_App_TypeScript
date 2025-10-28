@@ -1,18 +1,15 @@
-import  { useEffect, useState, } from "react";
-import type {  ChangeEvent } from "react";
-
+import { useEffect, useState, } from "react";
+import type { ChangeEvent } from "react";
 import { useAuth } from "../context/AuthContext";
 import axios from "axios";
 import { showToast } from "../components/ToastNotif";
 import ThemeToggle from "../components/ThemeToggle";
 
-// --- TYPES ---
 interface UserData {
     id: string;
     email: string;
-    phonenumber: string;
     name: string;
-    birthday: string;
+    Age: number;
     bio: string;
     image: any;
     photo: File | null;
@@ -30,14 +27,14 @@ export default function Profile() {
 
     const [isEditing, setIsEditing] = useState(false);
     const [isChangingPass, setIsChangingPass] = useState(false);
+    const [isLoading, setisLoading] = useState(true);
     const [previewPhoto, setPreviewPhoto] = useState<string | null>(null);
 
     const [Userdata, setUser] = useState<UserData>({
         id: user?._id || "",
         email: user?.Email || "",
-        phonenumber: user?.Phonenumber || "",
         name: user?.Name || "",
-        birthday: user?.Birthday || "",
+        Age: user?.Age || "",
         bio: user?.bio || "",
         image: user?.Image || null,
         photo: null,
@@ -48,26 +45,35 @@ export default function Profile() {
         NewPass: "",
     });
 
+
     const inputClass =
         "w-full border border-gray-500 bg-base-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400";
     const buttonBase =
         "px-4 py-2 rounded-lg transition-all duration-200 text-white";
 
-    // --- Sync user context data ---
+    // Load user data on mount
     useEffect(() => {
         if (user) {
-            setUser({
-                id: user._id || "",
-                email: user.Email || "",
-                phonenumber: user.Phonenumber || "",
-                name: user.Name || "",
-                birthday: user.Birthday || "",
-                bio: user.bio || "",
-                image: user.Image || null,
-                photo: null,
-            });
+            setisLoading(true);
+
+            const timer = setTimeout(() => {
+                setUser({
+                    id: user._id || "",
+                    email: user.Email || "",
+                    name: user.Name || "",
+                    Age: user.Age || "",
+                    bio: user.bio || "",
+                    image: user.Image || null,
+                    photo: null,
+                });
+
+                setisLoading(false);
+            }, 500);
+
+            return () => clearTimeout(timer);
         }
     }, [user]);
+
 
     // --- Handlers ---
     const handleCancel = () => {
@@ -76,21 +82,20 @@ export default function Profile() {
             setUser({
                 id: user._id || "",
                 email: user.Email || "",
-                phonenumber: user.Phonenumber || "",
                 name: user.Name || "",
-                birthday: user.Birthday || "",
+                Age: user.Age || "",
                 bio: user.bio || "",
                 image: user.Image || null,
                 photo: null,
             });
         }
     };
-
+    // input change handler
     const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
         setUser((prev) => ({ ...prev, [name]: value }));
     };
-
+    // photo change handler
     const handlePhotoChange = (e: ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
@@ -99,14 +104,14 @@ export default function Profile() {
         }
     };
 
+    // --- API Calls ---
     const handleSave = async () => {
         try {
             const formData = new FormData();
             formData.append("Id", Userdata.id);
             formData.append("Email", Userdata.email);
             formData.append("Name", Userdata.name);
-            formData.append("Phonenumber", Userdata.phonenumber || "");
-            formData.append("Birthday", Userdata.birthday || "");
+            formData.append("Age", Userdata.Age.toString());
             formData.append("bio", Userdata.bio || "");
             if (Userdata.photo) formData.append("Image", Userdata.photo);
 
@@ -121,10 +126,10 @@ export default function Profile() {
             setIsEditing(false);
         } catch (error: any) {
             console.error("Error updating profile:", error);
-            showToast(error.response?.data?.message || "Failed to update profile", "error");
+            showToast("error", error.response?.data?.message || "Failed to update profile");
         }
     };
-
+    //  --- Change Password ---
     const handleChangePassword = async () => {
         if (!passwordData.Password || !passwordData.NewPass) {
             showToast("error", "Please fill in both fields.");
@@ -144,8 +149,8 @@ export default function Profile() {
             setIsChangingPass(false);
             setPasswordData({ Password: "", NewPass: "" });
         } catch (error: any) {
-            console.error("Error changing password:", error);
-            showToast(error.response?.data?.message || "Failed to change password", "error");
+            console.error("error changing password:", error);
+            showToast("error", error.response?.data?.message || "Failed to change password");
         }
     };
 
@@ -156,17 +161,16 @@ export default function Profile() {
         return URL.createObjectURL(blob);
     };
 
-    const calculateAge = (birthday: string): string | number => {
-        if (!birthday) return "Not set";
-        const today = new Date();
-        const birthDate = new Date(birthday);
-        let age = today.getFullYear() - birthDate.getFullYear();
-        const hasBirthdayPassed =
-            today.getMonth() > birthDate.getMonth() ||
-            (today.getMonth() === birthDate.getMonth() && today.getDate() >= birthDate.getDate());
-        if (!hasBirthdayPassed) age--;
-        return age;
-    };
+    // show if loading 
+    if (isLoading) {
+        return (
+            <div className="flex justify-center items-center h-screen">
+                <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-accent"></div>
+            </div>
+        );
+    }
+
+
 
     return (
         <div className=" p-4 pt-10 flex justify-center bg-base-200 overflow-auto h-screen items-start md:items-center ">
@@ -262,39 +266,9 @@ export default function Profile() {
                                     name="name"
                                     value={Userdata.name}
                                     onChange={handleChange}
-                                    className={inputClass}
+                                    className={`${inputClass} capitalize`}
                                 />
                             </div>
-                            {/* <div>
-                                <label className="block text-info-content text-sm mb-1">Phone Number</label>
-                                <input
-                                    type="text"
-                                    name="phonenumber"
-                                    value={Userdata.phonenumber}
-                                    onChange={handleChange}
-                                    className={inputClass}
-                                />
-                            </div> */}
-                            {/* <div>
-                                <label className="block text-info-content text-sm mb-1">Email</label>
-                                <input
-                                    type="email"
-                                    name="email"
-                                    value={Userdata.email}
-                                    onChange={handleChange}
-                                    className={inputClass}
-                                />
-                            </div> */}
-                            {/* <div>
-                                <label className="block text-info-content text-sm mb-1">Birthday</label>
-                                <input
-                                    type="date"
-                                    name="birthday"
-                                    value={Userdata.birthday}
-                                    onChange={handleChange}
-                                    className={inputClass}
-                                />
-                            </div> */}
                             <div className="md:col-span-2">
                                 <label className="block text-info-content text-sm mb-1">Bio</label>
                                 <textarea
@@ -323,21 +297,27 @@ export default function Profile() {
                 ) : (
                     <>
                         {/* View Mode */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 ">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             {[
                                 { label: "Full Name", value: Userdata.name || "Not set" },
-                                { label: "Phone Number", value: Userdata.phonenumber || "No phone" },
                                 { label: "Email", value: Userdata.email || "Not set" },
-                                { label: "Birthday", value: Userdata.birthday || "Not set" },
-                                { label: "Age", value: calculateAge(Userdata.birthday) },
+                                { label: "Age", value: Userdata.Age },
                                 { label: "Bio", value: Userdata.bio || "No bio", fullWidth: true },
                             ].map((item, idx) => (
-                                <div key={idx} className={item.fullWidth ? "md:col-span-2 bg-base-200 p-2 rounded-2xl" : "bg-base-200 p-2 rounded-2xl"}>
+                                <div
+                                    key={idx}
+                                    className={`bg-base-200 p-2 rounded-2xl ${item.fullWidth ? "md:col-span-2" : ""}`}
+                                >
                                     <p className="text-sm text-base-content">{item.label}</p>
-                                    <p className="font-semibold break-words text-info-content">{item.value}</p>
+                                    <p className="font-semibold wrap-break-words text-info-content">
+                                        {item.label === "Full Name" && typeof item.value === "string"
+                                            ? item.value.replace(/\b\w/g, c => c.toUpperCase())
+                                            : item.value}
+                                    </p>
                                 </div>
                             ))}
                         </div>
+
                         <div className="flex flex-col sm:flex-row gap-3 justify-end mt-6">
                             <button
                                 onClick={() => setIsEditing(true)}
@@ -362,7 +342,8 @@ export default function Profile() {
                         </div>
                     </>
                 )}
+
             </div>
-        </div>
+        </div >
     );
 }

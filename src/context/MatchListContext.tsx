@@ -12,18 +12,6 @@ const getImageSrc = (imageBuffer?: { data?: ArrayBuffer }): string | null => {
     return URL.createObjectURL(blob);
 };
 
-const calculateAge = (birthday: string): number => {
-    const today = new Date();
-    const birthDate = new Date(birthday);
-    let age = today.getFullYear() - birthDate.getFullYear();
-    if (
-        today.getMonth() < birthDate.getMonth() ||
-        (today.getMonth() === birthDate.getMonth() && today.getDate() < birthDate.getDate())
-    ) {
-        age--;
-    }
-    return age;
-};
 
 // Types
 interface MatchItem {
@@ -47,7 +35,7 @@ interface MatchListProviderProps {
 }
 
 // Context creation
-const MatchListContext = createContext < MatchListContextType | undefined > (undefined);
+const MatchListContext = createContext<MatchListContextType | undefined>(undefined);
 
 export const MatchListProvider = ({ children }: MatchListProviderProps) => {
     const Baseurl = import.meta.env.VITE_BASEURL;
@@ -55,7 +43,7 @@ export const MatchListProvider = ({ children }: MatchListProviderProps) => {
     const userId = user?._id;
     const accessToken = localStorage.getItem("AccessToken");
 
-    const [matchesList, setMatchesList] = useState < MatchItem[] > ([]);
+    const [matchesList, setMatchesList] = useState<MatchItem[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -67,7 +55,7 @@ export const MatchListProvider = ({ children }: MatchListProviderProps) => {
                 _id: newMatch.senderId,
                 id: newMatch.senderId,
                 name: newMatch.name || "Unknown",
-                age: newMatch.Birthday ? calculateAge(newMatch.Birthday) : "N/A",
+                age: newMatch.Age ? newMatch.Age : "N/A",
                 bio: newMatch.bio || "No bio",
                 img:
                     getImageSrc(newMatch.Image) ||
@@ -82,6 +70,7 @@ export const MatchListProvider = ({ children }: MatchListProviderProps) => {
         };
     }, [userId]);
 
+    // Fetch matches from API
     const fetchMatches = async () => {
         if (!userId) return;
         setLoading(true);
@@ -95,8 +84,8 @@ export const MatchListProvider = ({ children }: MatchListProviderProps) => {
                     _id: item._id,
                     id: item.userSuggestion._id,
                     name: item.userSuggestion.Name || "Unknown",
-                    age: item.userSuggestion.Birthday
-                        ? calculateAge(item.userSuggestion.Birthday)
+                    age: item.userSuggestion.Age
+                        ? item.userSuggestion.Age
                         : "N/A",
                     bio: item.userSuggestion.bio || "No bio",
                     img:
@@ -114,6 +103,7 @@ export const MatchListProvider = ({ children }: MatchListProviderProps) => {
         }
     };
 
+    // Remove match from the list
     const removeMatch = (removedId: string) => {
         setMatchesList((prev) => prev.filter((match) => match.id !== removedId));
     };
