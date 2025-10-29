@@ -23,11 +23,13 @@ interface OverlayLabelProps {
 interface FullScreenMessageProps {
     title: string;
     subtitle: string;
+    onRefresh: () => void;
+
 }
 
 export default function Home() {
     const { user } = useAuth();
-    const { profiles, isEmpty, loading, ageFilter, updateAgeFilter, removeProfile, radius, updateRadius } = useRandomProvider();
+    const { profiles, isEmpty, loading, ageFilter, updateAgeFilter, removeProfile, radius, updateRadius, refresh } = useRandomProvider();
 
 
     const userId = user?._id;
@@ -122,7 +124,7 @@ export default function Home() {
     const blurEffect = Math.min(Math.abs(position.x) / 50, 5);
 
     return (
-        <div className="relative min-h-screen bg-base-200 flex flex-col items-center px-4">
+        <div className="relative min-h-screen flex flex-col items-center px-4 bg-linear-to-b from-purple-400 via-pink-400 to-red-400">
             <div
                 className="absolute top-6 right-6 z-50 cursor-pointer p-2 rounded-full bg-white/20 hover:bg-white/40 transition text-gray-800"
                 onClick={() => setShowModal(true)}
@@ -132,13 +134,13 @@ export default function Home() {
             </div>
 
             {isLoading && (
-                <FullScreenMessage title="Loading..." subtitle="Please wait while we find matches for you" />
+                <FullScreenMessage title="Loading..." subtitle="Please wait while we find matches for you" onRefresh={refresh} />
             )}
             {!isLoading && (!profiles.length || currentIndex >= profiles.length) && (
-                <FullScreenMessage title="No available profiles" subtitle="Check back later for more people to meet!" />
+                <FullScreenMessage title="No available profiles" subtitle="Check back later for more people to meet!" onRefresh={refresh} />
             )}
             {!isLoading && isEmpty && (
-                <FullScreenMessage title="No more profiles" subtitle="Check back later for more people to meet!" />
+                <FullScreenMessage title="No more profiles" subtitle="Check back later for more people to meet!" onRefresh={refresh} />
             )}
 
             <div className="absolute top-10 left-1/2 -translate-x-1/2 text-center z-20">
@@ -152,7 +154,7 @@ export default function Home() {
                 currentIndex < profiles.length &&
                 !isEmpty && (
                     <div
-                        className="flex items-center justify-center min-h-screen px-4 bg-base-200 relative"
+                        className="flex items-center justify-center min-h-screen px-4 relative"
                         onMouseDown={(e) => handleStart(e.clientX, e.clientY)}
                         onMouseMove={(e) => handleMove(e.clientX, e.clientY)}
                         onMouseUp={handleEnd}
@@ -205,7 +207,10 @@ export default function Home() {
                                                 bio={profile.bio}
                                                 image={profile.image}
                                                 age={profile.age}
-                                                bgColor="#E2E2B6"
+                                                latitude={profile.latitude}
+                                                longitude={profile.longitude}
+                                                currentLatitude={user?.Latitude || "0"}
+                                                currentLongitude={user?.Longitude || "0"}
                                             />
                                         </div>
                                     </div>
@@ -235,11 +240,17 @@ export default function Home() {
     );
 }
 
-function FullScreenMessage({ title, subtitle }: FullScreenMessageProps) {
+function FullScreenMessage({ title, subtitle, onRefresh }: FullScreenMessageProps) {
     return (
         <div className="flex items-center justify-center h-screen flex-col px-4 text-center text-gray-200">
             <h2 className="text-3xl font-bold mb-4 text-info-content">{title}</h2>
-            <p className="text-lg text-gray-400">{subtitle}</p>
+            <p className="text-lg text-gray-100">{subtitle}</p>
+            <button
+                className="btn btn-active btn-primary mt-5"
+                onClick={() => onRefresh()}
+            >
+                Refresh
+            </button>
         </div>
     );
 }
@@ -251,13 +262,16 @@ function OverlayLabel({
     rotate = 0,
     position = "left",
 }: OverlayLabelProps) {
-    const textColor = color === "green" ? "text-green-500" : "text-red-500";
-    const borderColor = color === "green" ? "border-green-500" : "border-red-500";
-    const positionClass = position === "left" ? "left-36" : "right-36";
+    const bgColor = color === "green" ? "bg-green-500/20" : "bg-red-500/20";
+    const textColor = color === "green" ? "text-green-600" : "text-red-600";
+    // const positionClass = position === "left" ? "left-36" : "right-36";
+    const positionClass = position === "left" ? "left-10 sm:left-36" : "right-4 sm:right-36";
+    const topClass = "top-40 sm:top-36";
 
     return (
+
         <div
-            className={`absolute top-10 ${positionClass} z-50 font-extrabold text-3xl border-4 px-4 py-2 rounded-lg shadow-lg backdrop-blur-sm ${textColor} ${borderColor}`}
+            className={`absolute ${topClass} ${positionClass} z-50 font-bold text-2xl px-4 sm:px-6 py-2 sm:py-3 rounded-xl shadow-md backdrop-blur-sm ${bgColor} ${textColor} border-2 border-current flex items-center justify-center`}
             style={{
                 opacity,
                 transform: `rotate(${rotate}deg)`,
@@ -265,6 +279,8 @@ function OverlayLabel({
             }}
         >
             {text}
-        </div>
+        </div >
+
     );
 }
+

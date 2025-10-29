@@ -13,7 +13,8 @@ export default function MatchList() {
     }
 
     return (
-        <div className="flex flex-col h-screen bg-base-200">
+        <div className="flex flex-col h-screen bg-linear-to-b from-purple-400 via-pink-400 to-red-400 "> 
+        {/* bg-base-200 */}
             <h1 className="p-4 pb-2 text-xl font-bold text-base-content">
                 All current matches
             </h1>
@@ -44,7 +45,7 @@ export default function MatchList() {
                 ) : (
                     <div className="flex flex-col items-center justify-center h-full text-info-content">
                         <h2 className="text-3xl font-bold mb-4">No matches found</h2>
-                        <p className="text-lg text-gray-400">Start to match</p>
+                        <p className="text-lg text-gray-100">Start to match</p>
                     </div>
                 )}
             </div>

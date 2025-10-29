@@ -67,7 +67,7 @@ export default function Sidebar() {
                                 key={item.path}
                                 to={item.path}
                                 className="block py-2 px-3 rounded-md bg-base-100/20 
-                border-2 border-base-content hover:bg-accent/25 hover:text-white transition-colors"
+                border-2 border-base-content hover:bg-accent/25 hover:text-base-content transition-colors"
                                 onClick={closeSidebar}
                             >
                                 {item.name}

@@ -26,13 +26,15 @@ export const initSocket = (userId: string): Socket => {
   });
 
   socket.on("disconnect", () => {
-    console.log("❌ Socket disconnected");
+    console.log(" Socket disconnected");
   });
 
   socket.on("New_Notif", (data: NotificationData) => {
     const MsgData = data.message;
     showToast("success", MsgData);
   });
+
+  
 
   return socket;
 };

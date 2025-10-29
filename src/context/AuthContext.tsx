@@ -51,6 +51,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
             });
             setUserData(res.data.Data);
             setUser(res.data.Data);
+            
         } catch (error: any) {
             console.error(error.response?.data?.message || error.message);
         }

@@ -183,8 +183,9 @@ export default function Profile() {
 
 
     return (
-        <div className="p-4 pt-10 flex justify-center bg-base-200 overflow-auto h-screen items-start md:items-center">
-            <div className="bg-base-100 shadow-xl rounded-2xl p-6 max-w-4xl w-full">
+        <div className="p-4  flex justify-center  overflow-auto h-screen items-start md:items-center
+        bg-linear-to-b from-purple-400 via-pink-400 to-red-400">  {/* base 200 */}
+            <div className="bg-base-100 shadow-xl rounded-2xl p-6 max-w-4xl w-full ">
                 <h1 className="text-3xl font-bold text-center mb-8 text-base-content">User Profile</h1>
 
                 {/* Profile Image */}
@@ -265,7 +266,7 @@ export default function Profile() {
                         </form>
                     ) : isEditing ? (
                         <div className="space-y-6 bg-base-200 p-6 rounded-xl shadow-inner">
-                            <h2 className="text-xl font-semibold text-center mb-4 text-info-content">Edit Profile</h2>
+                            <h2 className="text-xl font-semibold text-center mb-1 text-info-content">Edit Profile</h2>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <label className="block text-sm mb-1 text-info-content">Full Name</label>
@@ -274,7 +275,7 @@ export default function Profile() {
                                         name="name"
                                         value={Userdata.name}
                                         onChange={handleChange}
-                                        className={`${inputClass} capitalize`}
+                                        className={`${inputClass}`}
                                     />
                                 </div>
                                 <div className="md:col-span-2">
@@ -283,7 +284,7 @@ export default function Profile() {
                                         name="bio"
                                         value={Userdata.bio}
                                         onChange={handleChange}
-                                        className={`${inputClass} resize-none`}
+                                        className={`${inputClass} min-h-24 `}
                                     />
                                 </div>
                             </div>
@@ -304,25 +305,34 @@ export default function Profile() {
                         </div>
                     ) : (
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {[
-                                { label: "Full Name", value: Userdata.name || "Not set" },
-                                { label: "Email", value: Userdata.email || "Not set" },
-                                { label: "Age", value: Userdata.Age },
-                                { label: "Bio", value: Userdata.bio || "No bio", fullWidth: true },
-                            ].map((item, idx) => (
-                                <div
-                                    key={idx}
-                                    className={`bg-base-200 p-4 rounded-2xl shadow-sm ${item.fullWidth ? "md:col-span-2" : ""
-                                        }`}
-                                >
-                                    <p className="text-sm text-base-content">{item.label}</p>
-                                    <p className="font-semibold text-info-content wrap-break-words">
-                                        {item.label === "Full Name" && typeof item.value === "string"
-                                            ? item.value.replace(/\b\w/g, (c) => c.toUpperCase())
-                                            : item.value}
-                                    </p>
-                                </div>
-                            ))}
+
+                                    {[
+                                        { label: "Full Name", value: Userdata.name || "Not set" },
+                                        { label: "Email", value: Userdata.email || "Not set" },
+                                        { label: "Age", value: Userdata.Age },
+                                        { label: "Bio", value: Userdata.bio || "No bio", fullWidth: true },
+                                    ].map((item, idx) => (
+                                        <div
+                                            key={idx}
+                                            className={`bg-base-200 p-2 rounded-2xl shadow-sm ${item.fullWidth ? "md:col-span-2" : ""}`}
+                                        >
+                                            {/* Label sa itaas */}
+                                            <p className="text-sm text-base-content mb-1">{item.label}</p>
+
+                                            {/* Value box */}
+                                            <div
+                                                className={`p-2 rounded-lg bg-base-100 ${item.label === "Bio" ? "max-h-32 overflow-y-auto" : ""}`}
+                                            >
+                                                <p className="font-semibold text-info-content break-words">
+                                                    {item.label === "Full Name" && typeof item.value === "string"
+                                                        ? item.value.replace(/\b\w/g, (c) => c.toUpperCase())
+                                                        : item.value}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    ))}
+
+
 
                             {/* Action Buttons */}
                             <div className="md:col-span-2 flex flex-col sm:flex-row gap-3 justify-end mt-4">

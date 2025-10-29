@@ -83,14 +83,22 @@ export default function Message() {
                         time: timePart,
                     },
                 ],
+                
             }));
 
             // Update last message preview
-            setMatchedList((prev) =>
-                prev.map((m) =>
+            setMatchedList((prev) => {
+                const updated = prev.map((m) =>
                     m._id === otherId ? { ...m, lastMessage: message } : m
-                )
-            );
+                );
+
+                const target = updated.find((m) => m._id === otherId);
+                const others = updated.filter((m) => m._id !== otherId);
+                return target ? [target, ...others] : updated;
+            });
+
+
+            
         });
 
         return () => {
@@ -178,14 +186,17 @@ export default function Message() {
             ],
         }));
 
-        setMatchedList((prev) =>
-            prev.map((m) =>
+        setMatchedList((prev) => {
+            const updated = prev.map((m) =>
                 m._id === selectedMatch._id
                     ? { ...m, lastMessage: newMessage.message }
                     : m
-            )
-        );
+            );
 
+            const target = updated.find((m) => m._id === selectedMatch._id);
+            const others = updated.filter((m) => m._id !== selectedMatch._id);
+            return target ? [target, ...others] : updated;
+        });
         setInputText("");
 
         try {

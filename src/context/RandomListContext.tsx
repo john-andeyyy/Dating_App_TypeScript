@@ -127,6 +127,8 @@ export function RandomProvider({ children }: { children: ReactNode }) {
                 }));
 
                 setProfiles(formattedProfiles.sort(() => Math.random() - 0.5));
+                console.log(formattedProfiles.sort(() => Math.random() - 0.5));
+                
                 setIsEmpty(false);
             } else {
                 setProfiles([]);

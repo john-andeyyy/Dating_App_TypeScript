@@ -64,9 +64,17 @@ export const MatchListProvider = ({ children }: MatchListProviderProps) => {
             setMatchesList((prev) => [transformed, ...prev]);
         };
 
+        const handleUserUnmatched = (data: { userId: string }) => {
+            console.log("Received userUnmatched:", data);
+            setMatchesList((prev) => prev.filter((m) => m.id !== data.userId));
+        };
+
         socket.on("Recive_NewMatch", handleNewMatch);
+        socket.on("userUnmatched", handleUserUnmatched); 
+
         return () => {
             socket.off("Recive_NewMatch", handleNewMatch);
+            socket.off("userUnmatched", handleUserUnmatched);
         };
     }, [userId]);
 
