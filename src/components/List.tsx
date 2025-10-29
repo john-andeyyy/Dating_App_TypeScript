@@ -38,7 +38,7 @@ export default function List({ id, name, age, bio, img, onRemoved }: ListProps) 
     };
 
     return (
-        <div className="card  sm:w-80 md:w-96 bg-base-100 shadow-md hover:shadow-xl transition-all duration-300 border border-base-300">
+        <div className="card w-70 sm:w-80 md:w-96 bg-base-100 shadow-md hover:shadow-xl transition-all duration-300 border border-base-300">
             {/* Image Section */}
             <figure className="relative">
                 <img
@@ -51,7 +51,7 @@ export default function List({ id, name, age, bio, img, onRemoved }: ListProps) 
                 />
                 <button
                     onClick={handleRemoveClick}
-                    className="absolute top-2 right-2 btn btn-error btn-sm text-white"
+                    className="absolute top-2 right-2 btn bg-red-500 btn-sm text-white"
                 >
                     Unmatch
                 </button>
@@ -65,7 +65,8 @@ export default function List({ id, name, age, bio, img, onRemoved }: ListProps) 
                 <p className="text-sm text-base-content/70 font-normal">
                     &nbsp;• {age} yrs old
                 </p>
-                <p className="text-sm text-base-content/70 line-clamp-3">{bio}</p>
+                <p className="text-sm text-base-content/70 border rounded-xl p-2 max-h-30 sm:max-h-20 min-h-20 overflow-y-auto scrollbar-thin 
+                scrollbar-thumb-accent/50 scrollbar-track-transparent">{bio}</p>
             </div>
         </div>
     );

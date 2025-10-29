@@ -46,8 +46,10 @@ export default function Card({
     );
 
     return (
-        <div className="relative w-70 max-w-sm sm:w-96 sm:max-w-md rounded-3xl overflow-hidden shadow-2xl bg-base-100/90 border border-base-300">
-            <figure className="relative h-72 sm:h-80">
+        <div className="relative w-70 max-w-sm sm:w-96 sm:max-w-md rounded-3xl 
+        overflow-hidden shadow-2xl bg-base-100/90 border border-base-300">
+            {/* Figure */}
+            <figure className="relative h-60 sm:h-64"> {/* konting liit sa figure */}
                 <img
                     src={image}
                     alt={name}
@@ -67,11 +69,13 @@ export default function Card({
                 </div>
             </figure>
 
+            {/* Bio */}
             <div className="p-3 sm:p-4 flex flex-col gap-2 bg-base-100/90">
                 <p className="text-xs sm:text-sm font-semibold text-gray-500 uppercase tracking-wide">
                     Bio
                 </p>
-                <div className="relative border border-base-300 rounded-xl p-2 max-h-28 sm:max-h-32 min-h-16 overflow-y-auto scrollbar-thin scrollbar-thumb-accent/50 scrollbar-track-transparent">
+                <div className="relative border border-base-300 rounded-xl p-2 
+                max-h-40 sm:max-h-30 min-h-20 overflow-y-auto scrollbar-thin scrollbar-thumb-accent/50 scrollbar-track-transparent">
                     <p className="text-[13px] sm:text-[15px] leading-relaxed text-base-content whitespace-pre-wrap">
                         {bio || "No bio available."}
                     </p>

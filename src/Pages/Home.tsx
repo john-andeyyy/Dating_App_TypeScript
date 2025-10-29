@@ -4,8 +4,8 @@ import axios from "axios";
 import { useAuth } from "../context/AuthContext";
 import { showToast } from "../components/ToastNotif";
 import { useRandomProvider } from "../context/RandomListContext";
-import AgeRangeModal from "../components/Modals/FilterModal";
-import { FiSettings } from "react-icons/fi";
+import FilterModal from "../components/Modals/FilterModal";
+import { FaFilter } from "react-icons/fa";
 
 interface Position {
     x: number;
@@ -124,13 +124,13 @@ export default function Home() {
     const blurEffect = Math.min(Math.abs(position.x) / 50, 5);
 
     return (
-        <div className="relative min-h-screen flex flex-col items-center px-4 bg-linear-to-b from-purple-400 via-pink-400 to-red-400">
+        <div className="relative min-h-screen flex flex-col items-center px-4 bg-base-200">
             <div
                 className="absolute top-6 right-6 z-50 cursor-pointer p-2 rounded-full bg-white/20 hover:bg-white/40 transition text-gray-800"
                 onClick={() => setShowModal(true)}
                 title="Settings"
             >
-                <FiSettings className="text-accent" size={24} />
+                <FaFilter className="text-accent" size={24} />
             </div>
 
             {isLoading && (
@@ -219,7 +219,7 @@ export default function Home() {
                     </div>
                 )}
             {/* // Modal for changing age range and radius */}
-            <AgeRangeModal
+            <FilterModal
                 isOpen={showModal}
                 onClose={() => setShowModal(false)}
                 minAge={ageFilter.min}
@@ -244,7 +244,7 @@ function FullScreenMessage({ title, subtitle, onRefresh }: FullScreenMessageProp
     return (
         <div className="flex items-center justify-center h-screen flex-col px-4 text-center text-gray-200">
             <h2 className="text-3xl font-bold mb-4 text-info-content">{title}</h2>
-            <p className="text-lg text-gray-100">{subtitle}</p>
+            <p className="text-lg text-gray-500">{subtitle}</p>
             <button
                 className="btn btn-active btn-primary mt-5"
                 onClick={() => onRefresh()}

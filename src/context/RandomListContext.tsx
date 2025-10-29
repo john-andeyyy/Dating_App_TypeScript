@@ -57,7 +57,7 @@ export function RandomProvider({ children }: { children: ReactNode }) {
 
     
     const [ageFilter, setAgeFilter] = useState<AgeFilter>({ min: 18, max: 35 });
-    const [radius, setRadius] = useState(10);
+    const [radius, setRadius] = useState(20);
 
     const updateRadius = (value: number) => {
         setRadius(value);

@@ -13,7 +13,7 @@ export default function MatchList() {
     }
 
     return (
-        <div className="flex flex-col h-screen bg-linear-to-b from-purple-400 via-pink-400 to-red-400 "> 
+        <div className="flex flex-col h-screen bg-base-200"> 
         {/* bg-base-200 */}
             <h1 className="p-4 pb-2 text-xl font-bold text-base-content">
                 All current matches

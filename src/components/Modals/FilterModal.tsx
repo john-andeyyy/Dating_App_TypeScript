@@ -24,12 +24,12 @@ export default function AgeRangeModal({
 }: AgeRangeModalProps) {
     const [localMin, setLocalMin] = useState<number>(minAge);
     const [localMax, setLocalMax] = useState<number>(maxAge);
-    const [localRadius, setLocalRadius] = useState<number>(radius || 10);
+    const [localRadius, setLocalRadius] = useState<number>(radius || 20);
 
     useEffect(() => {
         setLocalMin(minAge);
         setLocalMax(maxAge);
-        setLocalRadius(radius || 10);
+        setLocalRadius(radius || 20);
     }, [minAge, maxAge, radius, isOpen]);
 
     return (
