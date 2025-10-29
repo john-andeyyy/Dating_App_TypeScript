@@ -316,7 +316,7 @@ export default function Profile() {
                                         }`}
                                 >
                                     <p className="text-sm text-base-content">{item.label}</p>
-                                    <p className="font-semibold text-info-content break-words">
+                                    <p className="font-semibold text-info-content wrap-break-words">
                                         {item.label === "Full Name" && typeof item.value === "string"
                                             ? item.value.replace(/\b\w/g, (c) => c.toUpperCase())
                                             : item.value}

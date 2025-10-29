@@ -63,7 +63,7 @@ export default function Message() {
         newSocket.on("receive_message", (data: any) => {
             const { senderId, receiverId, message, createdAt } = data;
 
-            // 🛑 Ignore if it's your own message (already handled locally)
+            //  Ignore if it's your own message (already handled locally)
             if (senderId === userId) return;
 
             const otherId = receiverId === userId ? senderId : receiverId;
@@ -235,7 +235,7 @@ export default function Message() {
                             return (
                                 <div
                                     key={i}
-                                    className={`px-4 py-2 rounded-xl shadow-sm max-w-[80%] md:max-w-[70%] break-words ${isSent
+                                    className={`px-4 py-2 rounded-xl shadow-sm max-w-[80%] md:max-w-[70%] wrap-break-words ${isSent
                                         ? "bg-accent text-white self-end"
                                         : "bg-base-300 text-base-content self-start"
                                         }`}
@@ -291,8 +291,8 @@ export default function Message() {
                                 key={match._id}
                                 onClick={() => handleSelectMatch(match)}
                                 className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-all bg-base-300 ${selectedMatch?._id === match._id
-                                        ? "bg-accent/30 ring-2 ring-accent"
-                                        : "hover:bg-base-100"
+                                    ? "bg-accent/30 ring-2 ring-accent"
+                                    : "hover:bg-base-100"
                                     }`}
                             >
                                 <img
@@ -318,17 +318,17 @@ export default function Message() {
                             </div>
                         ))
                     ) : (
-                            <div className="flex flex-col items-center justify-center py-10">
-                                <div className="flex flex-col items-center gap-3 bg-base-200 rounded-xl p-6 shadow-md border border-base-300">
-                                    
-                                    <span className="text-lg font-semibold text-base-content/70">
-                                        Start matching!
-                                    </span>
-                                    <span className="text-sm text-base-content/50 text-center">
-                                        Browse profiles and find your next connection.
-                                    </span>
-                                </div>
+                        <div className="flex flex-col items-center justify-center py-10">
+                            <div className="flex flex-col items-center gap-3 bg-base-200 rounded-xl p-6 shadow-md border border-base-300">
+
+                                <span className="text-lg font-semibold text-base-content/70">
+                                    Start matching!
+                                </span>
+                                <span className="text-sm text-base-content/50 text-center">
+                                    Browse profiles and find your next connection.
+                                </span>
                             </div>
+                        </div>
 
                     )}
                 </div>

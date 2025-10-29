@@ -8,6 +8,7 @@ interface GlobalModalProps {
     actions?: ReactNode;
 }
 
+// A reusable modal component
 export default function GlobalModal({
     isOpen,
     onClose,

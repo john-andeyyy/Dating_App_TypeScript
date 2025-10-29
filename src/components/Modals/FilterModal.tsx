@@ -5,10 +5,10 @@ interface AgeRangeModalProps {
     onClose: () => void;
     minAge: number;
     maxAge: number;
-    onApply: (minAge: number, maxAge: number, radius: number) => void; // add radius
+    onApply: (minAge: number, maxAge: number, radius: number) => void;
     useAgeFilter: boolean;
     onToggleUseAgeFilter: (value: boolean) => void;
-    radius: number; // current radius value
+    radius: number;
     onRadiusChange: (value: number) => void;
 }
 
@@ -33,6 +33,7 @@ export default function AgeRangeModal({
     }, [minAge, maxAge, radius, isOpen]);
 
     return (
+        // Modal for changing age range and radius
         <GlobalModal
             isOpen={isOpen}
             onClose={onClose}
@@ -93,6 +94,7 @@ export default function AgeRangeModal({
                 </div>
             )}
 
+            {/* // Radius slider */}
             <div className="flex flex-col mt-4">
                 <label className="mb-1">Radius (km): {localRadius}</label>
                 <input

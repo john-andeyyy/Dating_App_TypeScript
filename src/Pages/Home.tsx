@@ -213,7 +213,7 @@ export default function Home() {
                             })}
                     </div>
                 )}
-
+            {/* // Modal for changing age range and radius */}
             <AgeRangeModal
                 isOpen={showModal}
                 onClose={() => setShowModal(false)}

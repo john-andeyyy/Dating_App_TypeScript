@@ -17,7 +17,7 @@ function App() {
   const [locationAllowed, setLocationAllowed] = useState<boolean | null>(null);
 
   useEffect(() => {
-    // 🔍 Check and request location permission on load
+    // Check and request location permission on load
     if (navigator.geolocation) {
       navigator.permissions
         .query({ name: "geolocation" })

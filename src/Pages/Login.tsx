@@ -39,6 +39,7 @@ export default function Login() {
         Longitude: "",
     });
 
+    // Reset form data and error messages
     const cleanForm = () => {
         setFormData({
             name: "",
@@ -67,6 +68,7 @@ export default function Login() {
         }
     };
 
+    // Get user's current geolocation
     const getLocation = (): Promise<{ lat: string; lng: string }> => {
         return new Promise((resolve, reject) => {
             if (!navigator.geolocation) return reject("Not supported");
@@ -154,7 +156,7 @@ export default function Login() {
                 <p className="text-center text-base-content/70 mb-6">
                     {isLogin ? "Sign in to continue" : "Sign up to get started"}
                 </p>
-                
+
 
                 {errorMsg && (
                     <div className="bg-red-100 text-red-600 text-center py-2 rounded-lg mb-4 animate-pulse">
@@ -191,6 +193,7 @@ export default function Login() {
                         />
                     </div>
 
+                    {/* // for the Signup */}
                     {!isLogin && (
                         <>
                             <div>
@@ -267,7 +270,8 @@ export default function Login() {
                         )}
                     </button>
                 </form>
-
+                
+                {/* // Toggle between Login and Sign-up */}
                 <p className="mt-6 text-center text-base-content/70 text-sm">
                     {isLogin ? "Don't have an account?" : "Already have an account?"}{" "}
                     <button

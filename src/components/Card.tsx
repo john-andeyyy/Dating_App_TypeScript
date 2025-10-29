@@ -8,7 +8,7 @@ interface CardProps {
     age: number;
     isVerified?: boolean;
 }
-
+// A card component to display user profile information
 function Card({ name, bio, image, age, isVerified }: CardProps) {
     return (
         <div className="indicator">
@@ -36,7 +36,7 @@ function Card({ name, bio, image, age, isVerified }: CardProps) {
 
                     <p className="font-semibold text-sm text-gray-500">Bio:</p>
                     <div className="border border-base-300 rounded-sm p-2 flex-1 overflow-hidden flex flex-col">
-                        <p className="text-sm text-info-content sm:text-base break-words overflow-y-auto">
+                        <p className="text-sm text-info-content sm:text-base wrap-break-words overflow-y-auto">
                             {bio}
                         </p>
                     </div>
