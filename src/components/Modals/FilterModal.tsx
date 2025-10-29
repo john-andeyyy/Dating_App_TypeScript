@@ -64,6 +64,7 @@ export default function AgeRangeModal({
                 <label htmlFor="ageFilterCheckbox">Use Age Filter</label>
             </div>
 
+            {/* //! Filter by Age */}
             {useAgeFilter && (
                 <div className="flex justify-between gap-4 mt-4">
                     <div className="flex flex-col">
@@ -94,7 +95,8 @@ export default function AgeRangeModal({
                 </div>
             )}
 
-            {/* // Radius slider */}
+            {/* //! Radius slider */}
+            {/* //! Filter Distance*/}
             <div className="flex flex-col mt-4">
                 <label className="mb-1">Radius (km): {localRadius}</label>
                 <input
@@ -106,6 +108,7 @@ export default function AgeRangeModal({
                     className="range range-accent"
                 />
             </div>
+
         </GlobalModal>
     );
 }

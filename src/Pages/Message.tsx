@@ -71,6 +71,7 @@ export default function Message() {
             const formatted = formatDateTime(createdAt);
             const [datePart, timePart] = formatted.split(" at ");
 
+            //! Update messages state with the new incoming message using websocket
             setMessages((prev) => ({
                 ...prev,
                 [otherId]: [
@@ -96,9 +97,6 @@ export default function Message() {
                 const others = updated.filter((m) => m._id !== otherId);
                 return target ? [target, ...others] : updated;
             });
-
-
-            
         });
 
         return () => {
@@ -239,6 +237,7 @@ export default function Message() {
                             Close
                         </button>
                     </div>
+
 
                     <div className="flex flex-col flex-1 overflow-y-auto mb-4 space-y-2 bg-base-200 p-3 rounded-lg shadow-inner">
                         {(messages[selectedMatch._id] || []).map((msg, i) => {

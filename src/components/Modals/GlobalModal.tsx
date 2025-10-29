@@ -25,7 +25,7 @@ export default function GlobalModal({
         >
             <div
                 className="bg-base-200 p-6 rounded-xl shadow-lg w-80"
-                onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside
+                onClick={(e) => e.stopPropagation()} 
             >
                 {title && (
                     <h2 className="text-xl font-bold mb-4">{title}</h2>

@@ -10,6 +10,7 @@ export default function ThemeToggle() {
         document.documentElement.setAttribute("data-theme", isDark ? "dark" : "light");
     }, [isDark]);
 
+    //! Function to toggle theme
     const toggleTheme = (): void => {
         const newTheme = !isDark ? "dark" : "light";
         setIsDark(!isDark);

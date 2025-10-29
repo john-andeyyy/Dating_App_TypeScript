@@ -18,6 +18,7 @@ export default function List({ id, name, age, bio, img, onRemoved }: ListProps) 
     const userId: string = user?._id || "";
     const accessToken = localStorage.getItem("AccessToken");
 
+    //! Function to handle removing a match
     const handleRemoveClick = async () => {
         try {
             const res = await axios.put(`${Baseurl}/Matching/unMatch`, {

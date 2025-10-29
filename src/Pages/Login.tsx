@@ -84,7 +84,7 @@ export default function Login() {
         });
     };
 
-    // Handle form submission for login and sign-up
+    //! Handle form submission for login and sign-up
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setIsLoading(true);

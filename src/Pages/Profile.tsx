@@ -210,6 +210,7 @@ export default function Profile() {
                 {/* Edit / Change Password / View Mode */}
                 <div className="space-y-6">
                     {isChangingPass ? (
+                        // ! Change Password Mode
                         <form
                             onSubmit={(e) => {
                                 e.preventDefault();
@@ -265,6 +266,7 @@ export default function Profile() {
                             </div>
                         </form>
                     ) : isEditing ? (
+                        //! Edit Mode 
                         <div className="space-y-6 bg-base-200 p-6 rounded-xl shadow-inner">
                             <h2 className="text-xl font-semibold text-center mb-1 text-info-content">Edit Profile</h2>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -305,32 +307,32 @@ export default function Profile() {
                         </div>
                     ) : (
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {/* //! View mode */}
+                            {[
+                                { label: "Full Name", value: Userdata.name || "Not set" },
+                                { label: "Email", value: Userdata.email || "Not set" },
+                                { label: "Age", value: Userdata.Age },
+                                { label: "Bio", value: Userdata.bio || "No bio", fullWidth: true },
+                            ].map((item, idx) => (
+                                <div
+                                    key={idx}
+                                    className={`bg-base-200 p-2 rounded-2xl shadow-sm ${item.fullWidth ? "md:col-span-2" : ""}`}
+                                >
+                                    {/* Label sa itaas */}
+                                    <p className="text-sm text-base-content mb-1">{item.label}</p>
 
-                                    {[
-                                        { label: "Full Name", value: Userdata.name || "Not set" },
-                                        { label: "Email", value: Userdata.email || "Not set" },
-                                        { label: "Age", value: Userdata.Age },
-                                        { label: "Bio", value: Userdata.bio || "No bio", fullWidth: true },
-                                    ].map((item, idx) => (
-                                        <div
-                                            key={idx}
-                                            className={`bg-base-200 p-2 rounded-2xl shadow-sm ${item.fullWidth ? "md:col-span-2" : ""}`}
-                                        >
-                                            {/* Label sa itaas */}
-                                            <p className="text-sm text-base-content mb-1">{item.label}</p>
-
-                                            {/* Value box */}
-                                            <div
-                                                className={`p-2 rounded-lg bg-base-100 ${item.label === "Bio" ? "max-h-32 overflow-y-auto" : ""}`}
-                                            >
-                                                <p className="font-semibold text-info-content break-words">
-                                                    {item.label === "Full Name" && typeof item.value === "string"
-                                                        ? item.value.replace(/\b\w/g, (c) => c.toUpperCase())
-                                                        : item.value}
-                                                </p>
-                                            </div>
-                                        </div>
-                                    ))}
+                                    {/* Value box */}
+                                    <div
+                                        className={`p-2 rounded-lg bg-base-100 ${item.label === "Bio" ? "max-h-32 overflow-y-auto" : ""}`}
+                                    >
+                                        <p className="font-semibold text-info-content break-words">
+                                            {item.label === "Full Name" && typeof item.value === "string"
+                                                ? item.value.replace(/\b\w/g, (c) => c.toUpperCase())
+                                                : item.value}
+                                        </p>
+                                    </div>
+                                </div>
+                            ))}
 
 
 

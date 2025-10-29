@@ -201,6 +201,8 @@ export default function Home() {
                                                 />
                                             </>
                                         )}
+                                        
+                                        {/* //! Card of showing of a random people */}
                                         <div style={{ filter: isTop ? `blur(${blurEffect}px)` : "none" }}>
                                             <Card
                                                 name={profile.name}
@@ -213,6 +215,7 @@ export default function Home() {
                                                 currentLongitude={user?.Longitude || "0"}
                                             />
                                         </div>
+
                                     </div>
                                 );
                             })}

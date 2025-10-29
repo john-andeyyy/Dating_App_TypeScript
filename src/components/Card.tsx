@@ -49,7 +49,7 @@ export default function Card({
         <div className="relative w-70 max-w-sm sm:w-96 sm:max-w-md rounded-3xl 
         overflow-hidden shadow-2xl bg-base-100/90 border border-base-300">
             {/* Figure */}
-            <figure className="relative h-60 sm:h-64"> {/* konting liit sa figure */}
+            <figure className="relative h-60 sm:h-64">
                 <img
                     src={image}
                     alt={name}
