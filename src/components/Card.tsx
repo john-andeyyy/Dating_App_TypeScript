@@ -1,5 +1,4 @@
 import { AiFillCheckCircle } from "react-icons/ai";
-import { useState } from "react";
 
 interface CardProps {
     name: string;
