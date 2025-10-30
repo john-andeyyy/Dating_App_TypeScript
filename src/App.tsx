@@ -65,7 +65,7 @@ function App() {
           <br />
           <span className="font-semibold">
             Chrome:
-          </span> Click the 🔒 icon → Site settings → Allow location.
+          </span> Click the  icon → Site settings → Allow location.
         </p>
         <button
           onClick={() => window.location.reload()}

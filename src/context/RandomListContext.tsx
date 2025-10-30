@@ -36,6 +36,11 @@ interface RandomListContextType {
     updateAgeFilter: (min: number, max: number) => void;
     radius: number;
     updateRadius: (value: number) => void;
+    Update_InterestedIn: (value: string) => void;
+    useAgeFilter: boolean;
+    toggleUseAgeFilter: (value: boolean) => void;
+
+
 }
 
 const RandomListContext = createContext<RandomListContextType | undefined>(
@@ -51,11 +56,22 @@ export function RandomProvider({ children }: { children: ReactNode }) {
     const [profiles, setProfiles] = useState<Profile[]>([]);
     const [isEmpty, setIsEmpty] = useState(false);
     const [loading, setLoading] = useState(true);
-    const [useAgeFilter] = useState(
+    const [useAgeFilter, setUseAgeFilter] = useState<boolean>(
         () => localStorage.getItem("useAgeFilter") === "true"
     );
+    const toggleUseAgeFilter = (value: boolean) => {
+        setUseAgeFilter(value);
+        localStorage.setItem("useAgeFilter", String(value));
+    };
 
-    
+
+
+    const [interestedIn, setinterestedIn] = useState<string>("All");
+
+    const Update_InterestedIn = (value: string) => {
+        setinterestedIn(value);
+    }
+
     const [ageFilter, setAgeFilter] = useState<AgeFilter>({ min: 18, max: 35 });
     const [radius, setRadius] = useState(20);
 
@@ -100,6 +116,7 @@ export function RandomProvider({ children }: { children: ReactNode }) {
                 ? `${Baseurl}/Matching/PeopleList/${userId}?minAge=${ageFilter.min}&maxAge=${ageFilter.max}`
                 : `${Baseurl}/Matching/PeopleList/${userId}`;
 
+            console.log("useAgeFilter: ", useAgeFilter);
 
             //  request para mag-send ng location + radius sa body
             const res = await axios.get(url, {
@@ -107,7 +124,8 @@ export function RandomProvider({ children }: { children: ReactNode }) {
                 params: {
                     latitude: userLat,
                     longitude: userLng,
-                    radius
+                    radius,
+                    interestedIn
                 }
             });
 
@@ -128,7 +146,7 @@ export function RandomProvider({ children }: { children: ReactNode }) {
 
                 setProfiles(formattedProfiles.sort(() => Math.random() - 0.5));
                 console.log(formattedProfiles.sort(() => Math.random() - 0.5));
-                
+
                 setIsEmpty(false);
             } else {
                 setProfiles([]);
@@ -150,7 +168,7 @@ export function RandomProvider({ children }: { children: ReactNode }) {
 
     useEffect(() => {
         fetchProfiles();
-    }, [userId, ageFilter,radius]);
+    }, [userId, ageFilter, radius, useAgeFilter]);
 
     const updateAgeFilter = (min: number, max: number) => {
         setAgeFilter({ min, max });
@@ -168,6 +186,10 @@ export function RandomProvider({ children }: { children: ReactNode }) {
                 updateAgeFilter,
                 radius,
                 updateRadius,
+                Update_InterestedIn,
+                useAgeFilter,
+                toggleUseAgeFilter
+
             }}
         >
             {children}

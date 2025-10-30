@@ -29,7 +29,7 @@ interface FullScreenMessageProps {
 
 export default function Home() {
     const { user } = useAuth();
-    const { profiles, isEmpty, loading, ageFilter, updateAgeFilter, removeProfile, radius, updateRadius, refresh } = useRandomProvider();
+    const { profiles, isEmpty, loading, ageFilter, updateAgeFilter, removeProfile, radius, updateRadius, refresh, Update_InterestedIn } = useRandomProvider();
 
 
     const userId = user?._id;
@@ -124,7 +124,8 @@ export default function Home() {
     const blurEffect = Math.min(Math.abs(position.x) / 50, 5);
 
     return (
-        <div className="relative min-h-screen flex flex-col items-center px-4 bg-base-200">
+        <div className="relative min-h-screen flex flex-col items-center px-4 bg-gradient-to-r from-purple-400 via-pink-500 to-red-500">
+
             <div
                 className="absolute top-6 right-6 z-50 cursor-pointer p-2 rounded-full bg-white/20 hover:bg-white/40 transition text-gray-800"
                 onClick={() => setShowModal(true)}
@@ -201,7 +202,7 @@ export default function Home() {
                                                 />
                                             </>
                                         )}
-                                        
+
                                         {/* //! Card of showing of a random people */}
                                         <div style={{ filter: isTop ? `blur(${blurEffect}px)` : "none" }}>
                                             <Card
@@ -231,12 +232,14 @@ export default function Home() {
                 useAgeFilter={useAgeFilter}
                 onToggleUseAgeFilter={handleToggleAgeFilter}
                 onRadiusChange={updateRadius}
-                onApply={(min, max, radiusValue) => {
+                onApply={(min, max, radiusValue, InterestGender) => {
                     updateAgeFilter(min, max);
                     updateRadius(radiusValue);
                     setShowModal(false);
+                    Update_InterestedIn(InterestGender);
                 }}
             />
+
 
 
         </div>
@@ -248,12 +251,15 @@ function FullScreenMessage({ title, subtitle, onRefresh }: FullScreenMessageProp
         <div className="flex items-center justify-center h-screen flex-col px-4 text-center text-gray-200">
             <h2 className="text-3xl font-bold mb-4 text-info-content">{title}</h2>
             <p className="text-lg text-gray-500">{subtitle}</p>
-            <button
-                className="btn btn-active btn-primary mt-5"
-                onClick={() => onRefresh()}
-            >
-                Refresh
-            </button>
+            {title != "Loading..." && (
+                <button
+                    className="btn btn-active btn-primary mt-5"
+                    onClick={() => onRefresh()}
+                >
+                    Refresh
+                </button>
+            )}
+            
         </div>
     );
 }

@@ -1,6 +1,7 @@
 import axios from "axios";
 import { createContext, useState, useContext, useEffect } from "react";
 import type { ReactNode } from "react";
+import { Navigate } from "react-router-dom";
 
 import { showToast } from "../components/ToastNotif";
 
@@ -51,7 +52,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
             });
             setUserData(res.data.Data);
             setUser(res.data.Data);
+            console.log(res.data.Data);
             
+
         } catch (error: any) {
             console.error(error.response?.data?.message || error.message);
         }
@@ -104,6 +107,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         setUserData({});
         setUser(null);
         showToast("success", "Logout successful");
+        <Navigate to="/" replace />
     };
 
     return (

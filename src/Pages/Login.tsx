@@ -11,6 +11,8 @@ interface FormData {
     shortBio: string;
     Age: string;
     Email: string;
+    gender: string;
+    interestedIn: string;
     Password: string;
     Latitude: string;
     Longitude: string;
@@ -37,6 +39,8 @@ export default function Login() {
         Password: "",
         Latitude: "",
         Longitude: "",
+        gender: "",
+        interestedIn: "",
     });
 
     // Reset form data and error messages
@@ -49,6 +53,8 @@ export default function Login() {
             Password: "",
             Latitude: "",
             Longitude: "",
+            gender: "",
+            interestedIn: "",
         });
         setErrorMsg("");
         setProfileImage(null);
@@ -59,6 +65,11 @@ export default function Login() {
         const { name, value } = e.target;
         setFormData((prev) => ({ ...prev, [name]: value }));
     };
+    const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const { name, value } = e.target;
+        setFormData((prev) => ({ ...prev, [name]: value }));
+    };
+
 
     const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -112,7 +123,7 @@ export default function Login() {
             }
         } else {
             try {
-
+                //! sign-up api call
                 if (formData.Age && parseInt(formData.Age) < 18) {
                     setErrorMsg("You must be at least 18 years old to sign up.");
                     setIsLoading(false);
@@ -124,6 +135,8 @@ export default function Login() {
                 formDataToSend.append("Password", formData.Password);
                 formDataToSend.append("Age", formData.Age);
                 formDataToSend.append("bio", formData.shortBio);
+                formDataToSend.append("gender", formData.gender);
+                formDataToSend.append("interestedIn", formData.interestedIn);
 
                 const { lat, lng } = await getLocation();
                 formDataToSend.append("Latitude", lat);
@@ -149,7 +162,7 @@ export default function Login() {
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-base-200 p-4">
-            <div className="bg-base-100 shadow-2xl rounded-3xl p-8 w-full max-w-md">
+            <div className="bg-base-100 shadow-2xl rounded-3xl p-8  min-w-sm max-w-lg">
                 <h1 className="text-3xl font-bold text-center text-accent mb-1">
                     {isLogin ? "Welcome Back!" : "Create Account"}
                 </h1>
@@ -193,7 +206,7 @@ export default function Login() {
                         />
                     </div>
 
-                    {/* // for the Signup */}
+                    {/* //! for the Signup */}
                     {!isLogin && (
                         <>
                             <div>
@@ -210,18 +223,64 @@ export default function Login() {
                                 />
                             </div>
 
-                            <div>
-                                <label className="label font-semibold">Age</label>
-                                <input
-                                    type="number"
-                                    name="Age"
-                                    placeholder="Enter your age"
-                                    className="input input-bordered w-full bg-base-200 focus:bg-base-100 focus:border-accent transition rounded-lg px-4 py-3"
-                                    value={formData.Age}
-                                    onChange={handleChange}
-                                    required
-                                />
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                {/* Age Input */}
+                                <div>
+                                    <label className="label font-semibold">Age</label>
+                                    <input
+                                        type="number"
+                                        name="Age"
+                                        placeholder="18+"
+                                        className="input input-bordered w-full bg-base-200 focus:bg-base-100 focus:border-accent transition rounded-lg px-4 py-3"
+                                        value={formData.Age}
+                                        onChange={handleChange}
+                                        required
+                                        min={18}
+                                    />
+                                </div>
+
+                                {/* Gender Dropdown */}
+                                <div>
+                                    <label className="label font-semibold">Gender</label>
+                                    <select
+                                        id="gender"
+                                        name="gender"
+                                        value={formData.gender}
+                                        onChange={handleSelectChange}
+                                        className="select select-bordered w-full bg-base-200 focus:bg-base-100 focus:border-accent transition rounded-lg px-3 py-2"
+                                        required
+                                    >
+                                        <option value="" disabled hidden>
+                                            Select gender
+                                        </option>
+                                        <option value="male">Male</option>
+                                        <option value="female">Female</option>
+                                        <option value="other">Other</option>
+                                    </select>
+                                </div>
+
+                                {/* Interested In Dropdown */}
+                                <div>
+                                    <label className="label font-semibold">Interested In</label>
+                                    <select
+                                        id="interestedIn"
+                                        name="interestedIn"
+                                        value={formData.interestedIn}
+                                        onChange={handleSelectChange}
+                                        className="select select-bordered w-full bg-base-200 focus:bg-base-100 focus:border-accent transition rounded-lg px-3 py-2"
+                                        required
+                                    >
+                                        <option value="" disabled hidden>
+                                            Select interest
+                                        </option>
+                                        <option value="male">Male</option>
+                                        <option value="female">Female</option>
+                                        <option value="other">Other</option>
+                                        <option value="all">All</option>
+                                    </select>
+                                </div>
                             </div>
+
 
                             <div>
                                 <label className="label font-semibold">Short Bio</label>
@@ -270,7 +329,7 @@ export default function Login() {
                         )}
                     </button>
                 </form>
-                
+
                 {/* // Toggle between Login and Sign-up */}
                 <p className="mt-6 text-center text-base-content/70 text-sm">
                     {isLogin ? "Don't have an account?" : "Already have an account?"}{" "}

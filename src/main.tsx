@@ -14,7 +14,9 @@ createRoot(document.getElementById('root')!).render(
       <AuthProvider>
         <RandomProvider>
           <MatchListProvider>
+
             <App />
+            
           </MatchListProvider>
         </RandomProvider>
       </AuthProvider>

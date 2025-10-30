@@ -84,7 +84,7 @@ export default function Message() {
                         time: timePart,
                     },
                 ],
-                
+
             }));
 
             // Update last message preview
@@ -97,6 +97,7 @@ export default function Message() {
                 const others = updated.filter((m) => m._id !== otherId);
                 return target ? [target, ...others] : updated;
             });
+
         });
 
         return () => {
@@ -184,6 +185,7 @@ export default function Message() {
             ],
         }));
 
+        // update last message preview
         setMatchedList((prev) => {
             const updated = prev.map((m) =>
                 m._id === selectedMatch._id
@@ -214,6 +216,7 @@ export default function Message() {
         return URL.createObjectURL(blob);
     };
 
+    // chat view component
     const ChatView = (
         <div className="flex flex-col flex-1 h-full bg-base-100 p-4">
             {selectedMatch ? (
@@ -238,7 +241,7 @@ export default function Message() {
                         </button>
                     </div>
 
-
+                    {/* // Chat messages area */}
                     <div className="flex flex-col flex-1 overflow-y-auto mb-4 space-y-2 bg-base-200 p-3 rounded-lg shadow-inner">
                         {(messages[selectedMatch._id] || []).map((msg, i) => {
                             const isSent = msg.senderId === userdata._id;
@@ -260,6 +263,7 @@ export default function Message() {
                         <div ref={messagesEndRef} />
                     </div>
 
+                    {/* // Input area  */}
                     <div className="flex gap-2">
                         <textarea
                             rows={1}

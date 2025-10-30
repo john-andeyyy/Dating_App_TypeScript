@@ -1,11 +1,17 @@
 import { useState, useEffect } from "react";
 import GlobalModal from "./GlobalModal";
+
 interface AgeRangeModalProps {
     isOpen: boolean;
     onClose: () => void;
     minAge: number;
     maxAge: number;
-    onApply: (minAge: number, maxAge: number, radius: number) => void;
+    onApply: (
+        minAge: number,
+        maxAge: number,
+        radius: number,
+        interestGender: string
+    ) => void;
     useAgeFilter: boolean;
     onToggleUseAgeFilter: (value: boolean) => void;
     radius: number;
@@ -22,37 +28,65 @@ export default function AgeRangeModal({
     onToggleUseAgeFilter,
     radius,
 }: AgeRangeModalProps) {
-    const [localMin, setLocalMin] = useState<number>(minAge);
-    const [localMax, setLocalMax] = useState<number>(maxAge);
+    //  allow empty string for controlled <input type="number">
+    const [MinAge, setMinAge] = useState<number | "">(minAge);
+    const [MaxAge, setMaxAge] = useState<number | "">(maxAge);
+    const [InterestGender, setInterestGender] = useState<string>("All");
     const [localRadius, setLocalRadius] = useState<number>(radius || 20);
+    const [error, setError] = useState<string>("");
 
+    //  Reset values when modal opens
     useEffect(() => {
-        setLocalMin(minAge);
-        setLocalMax(maxAge);
+        setMinAge(minAge);
+        setMaxAge(maxAge);
         setLocalRadius(radius || 20);
+        setError("");
     }, [minAge, maxAge, radius, isOpen]);
 
+    //  Apply filters with proper validation
+    const handleApply = () => {
+        if (useAgeFilter) {
+            if (MinAge === "" || MaxAge === "") {
+                setError("Please enter both Min and Max age");
+                return;
+            }
+            if (MinAge > MaxAge) {
+                setError("Min age cannot be higher than Max age");
+                return;
+            }
+        }
+        setError("");
+        onApply(
+            Number(MinAge) || minAge,
+            Number(MaxAge) || maxAge,
+            localRadius,
+            InterestGender
+        );
+    };
+
     return (
-        // Modal for changing age range and radius
         <GlobalModal
             isOpen={isOpen}
             onClose={onClose}
-            title="Change Age Range & Radius"
+            title="Change Filters"
             actions={
                 <>
-                    <button className="btn bg-accent text-white" onClick={onClose}>
+                    <button
+                        className="btn bg-gray-200 text-gray-800"
+                        onClick={onClose}
+                    >
                         Cancel
                     </button>
                     <button
-                        className="btn bg-accent text-white"
-                        onClick={() => onApply(localMin, localMax, localRadius)}
+                        className="btn bg-accent text-white hover:bg-accent/90"
+                        onClick={handleApply}
                     >
                         Apply
                     </button>
-
                 </>
             }
         >
+            {/*  Age Filter Toggle */}
             <div className="flex items-center gap-2 mt-4">
                 <input
                     type="checkbox"
@@ -61,54 +95,96 @@ export default function AgeRangeModal({
                     className="checkbox checkbox-accent"
                     id="ageFilterCheckbox"
                 />
-                <label htmlFor="ageFilterCheckbox">Use Age Filter</label>
+                <label htmlFor="ageFilterCheckbox" className="text-sm font-medium">
+                    Use Age Filter
+                </label>
             </div>
 
-            {/* //! Filter by Age */}
+            {/*  Age Range Inputs */}
             {useAgeFilter && (
-                <div className="flex justify-between gap-4 mt-4">
+                <div className="grid grid-cols-2 gap-4 mt-4">
                     <div className="flex flex-col">
-                        <label className="mb-1">Min Age</label>
+                        <label className="mb-1 text-sm font-medium">Min Age</label>
                         <input
                             type="number"
-                            value={localMin}
-                            disabled={!useAgeFilter}
+                            value={MinAge}
                             min={18}
                             max={99}
-                            onChange={(e) => setLocalMin(Number(e.target.value))}
-                            className="input input-bordered w-24 rounded-lg focus:border-pink-500 focus:ring focus:ring-pink-500/20"
+                            onChange={(e) => {
+                                const value = e.target.value === "" ? "" : Number(e.target.value);
+
+                                if (value !== "" && (value < 18 || value > 99)) {
+                                    setError("Min age must be between 18");
+                                    return;
+                                }
+
+                                setError("");
+                                setMinAge(value);
+                            }}
+                            className={`input input-bordered w-full rounded-lg focus:border-pink-500 focus:ring focus:ring-pink-500/20 ${error && MinAge === "" ? "border-red-500" : ""
+                                }`}
                         />
                     </div>
 
                     <div className="flex flex-col">
-                        <label className="mb-1">Max Age</label>
+                        <label className="mb-1 text-sm font-medium">Max Age</label>
                         <input
                             type="number"
-                            value={localMax}
-                            disabled={!useAgeFilter}
+                            value={MaxAge}
                             min={18}
                             max={99}
-                            onChange={(e) => setLocalMax(Number(e.target.value))}
-                            className="input input-bordered w-24 rounded-lg focus:border-pink-500 focus:ring focus:ring-pink-500/20"
+                            onChange={(e) =>
+                                setMaxAge(
+                                    e.target.value === "" ? "" : Number(e.target.value)
+                                )
+                            }
+                            className={`input input-bordered w-full rounded-lg focus:border-pink-500 focus:ring focus:ring-pink-500/20 ${error && MaxAge === "" ? "border-red-500" : ""
+                                }`}
                         />
                     </div>
                 </div>
             )}
 
-            {/* //! Radius slider */}
-            {/* //! Filter Distance*/}
-            <div className="flex flex-col mt-4">
-                <label className="mb-1">Radius (km): {localRadius}</label>
+            {/*  Error message */}
+            {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
+
+            {/*  Radius Slider */}
+            <div className="flex flex-col mt-6">
+                <label className="mb-1 text-sm font-medium">
+                    Radius (km):{" "}
+                    <span className="font-semibold">{localRadius}</span>
+                </label>
                 <input
                     type="range"
                     min={1}
-                    max={1000}
+                    max={500}
                     value={localRadius}
                     onChange={(e) => setLocalRadius(Number(e.target.value))}
                     className="range range-accent"
                 />
             </div>
 
+            {/*  Interested In Dropdown */}
+            <div className="pt-6">
+                <label
+                    htmlFor="interestedIn"
+                    className="text-sm font-medium mr-2"
+                >
+                    Interested In:
+                </label>
+                <select
+                    id="interestedIn"
+                    name="interestedIn"
+                    value={InterestGender}
+                    onChange={(e) => setInterestGender(e.target.value)}
+                    className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-accent"
+                >
+                    <option value="All">All</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
         </GlobalModal>
     );
 }

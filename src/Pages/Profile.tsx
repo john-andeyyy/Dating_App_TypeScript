@@ -12,6 +12,8 @@ interface UserData {
     Age: number;
     bio: string;
     image: any;
+    gender: string;
+    interestedIn: string;
     photo: File | null;
 }
 
@@ -38,6 +40,8 @@ export default function Profile() {
         name: user?.Name || "",
         Age: user?.Age || "",
         bio: user?.bio || "",
+        gender: user?.gender || "",
+        interestedIn: user?.interestedIn || "",
         image: user?.Image || null,
         photo: null,
     });
@@ -67,6 +71,8 @@ export default function Profile() {
                     bio: user.bio || "",
                     image: user.Image || null,
                     photo: null,
+                    gender: user.gender || "",
+                    interestedIn: user?.interestedIn || "",
                 });
 
                 setisLoading(false);
@@ -94,6 +100,8 @@ export default function Profile() {
                 bio: user.bio || "",
                 image: user.Image || null,
                 photo: null,
+                gender: user.gender || "",
+                interestedIn: user?.interestedIn || "",
             });
             setPreviewPhoto(user.Image ? getImageSrc(user.Image) : null);
         }
@@ -122,6 +130,9 @@ export default function Profile() {
             formData.append("Name", Userdata.name);
             formData.append("Age", Userdata.Age.toString());
             formData.append("bio", Userdata.bio || "");
+            formData.append("gender", Userdata.gender || "");
+            formData.append("interestedIn", Userdata.interestedIn || "");
+
             if (Userdata.photo) formData.append("Image", Userdata.photo);
 
             await axios.put(`${Baseurl}/user/auth/update`, formData, {
@@ -184,7 +195,7 @@ export default function Profile() {
 
     return (
         <div className="p-4  flex justify-center  overflow-auto h-screen items-start md:items-center
-        bg-base-200">  {/* base 200 */}
+        bg-gradient-to-r from-purple-400 via-pink-500 to-red-500">  {/* base 200 */}
             <div className="bg-base-100 shadow-xl rounded-2xl p-6 max-w-4xl w-full ">
                 <h1 className="text-3xl font-bold text-center mb-8 text-base-content">User Profile</h1>
 
@@ -270,6 +281,7 @@ export default function Profile() {
                         <div className="space-y-6 bg-base-200 p-6 rounded-xl shadow-inner">
                             <h2 className="text-xl font-semibold text-center mb-1 text-info-content">Edit Profile</h2>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {/* Full Name */}
                                 <div>
                                     <label className="block text-sm mb-1 text-info-content">Full Name</label>
                                     <input
@@ -277,19 +289,75 @@ export default function Profile() {
                                         name="name"
                                         value={Userdata.name}
                                         onChange={handleChange}
-                                        className={`${inputClass}`}
+                                        className={inputClass}
                                     />
                                 </div>
+
+                                {/* Age */}
+                                <div>
+                                    <label className="block text-sm mb-1 text-info-content">Age</label>
+                                    <input
+                                        type="number"
+                                        name="Age"
+                                        min={18}
+                                        max={99}
+                                        value={Userdata.Age}
+                                        onChange={handleChange}
+                                        className={inputClass}
+                                    />
+                                </div>
+
+                                {/* Gender */}
+                                <div>
+                                    <label className="block text-sm mb-1 text-info-content">Gender</label>
+                                    <select
+                                        name="gender"
+                                        value={Userdata.gender}
+                                        onChange={handleChange as any}
+                                        className={inputClass}
+                                        required
+                                    >
+                                        <option value="" disabled hidden>
+                                            Select gender
+                                        </option>
+                                        <option value="male">Male</option>
+                                        <option value="female">Female</option>
+                                        <option value="other">Other</option>
+                                    </select>
+                                </div>
+
+                                {/* Interested In */}
+                                <div>
+                                    <label className="block text-sm mb-1 text-info-content">Interested In</label>
+                                    <select
+                                        name="interestedIn"
+                                        value={Userdata.interestedIn}
+                                        onChange={handleChange as any}
+                                        className={inputClass}
+                                        required
+                                    >
+                                        <option value="" disabled hidden>
+                                            Select interest
+                                        </option>
+                                        <option value="male">Male</option>
+                                        <option value="female">Female</option>
+                                        <option value="other">Other</option>
+                                    </select>
+
+                                </div>
+
+                                {/* Bio */}
                                 <div className="md:col-span-2">
                                     <label className="block text-sm mb-1 text-info-content">Bio</label>
                                     <textarea
                                         name="bio"
                                         value={Userdata.bio}
                                         onChange={handleChange}
-                                        className={`${inputClass} min-h-24 `}
+                                        className={`${inputClass} min-h-24`}
                                     />
                                 </div>
                             </div>
+
                             <div className="flex flex-col sm:flex-row gap-3 justify-end mt-4">
                                 <button
                                     onClick={handleSave}
@@ -307,35 +375,59 @@ export default function Profile() {
                         </div>
                     ) : (
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {/* //! View mode */}
-                            {[
-                                { label: "Full Name", value: Userdata.name || "Not set" },
-                                { label: "Email", value: Userdata.email || "Not set" },
-                                { label: "Age", value: Userdata.Age },
-                                { label: "Bio", value: Userdata.bio || "No bio", fullWidth: true },
-                            ].map((item, idx) => (
-                                <div
-                                    key={idx}
-                                    className={`bg-base-200 p-2 rounded-2xl shadow-sm ${item.fullWidth ? "md:col-span-2" : ""}`}
-                                >
-                                    {/* Label sa itaas */}
-                                    <p className="text-sm text-base-content mb-1">{item.label}</p>
+                            {/* Full Name */}
+                            <div className="bg-base-200 p-2 rounded-2xl shadow-sm">
+                                <p className="text-sm text-base-content mb-1">Full Name</p>
+                                <div className="p-2 rounded-lg bg-base-100">
+                                    <p className="font-semibold text-info-content break-words">
+                                        {Userdata.name ? Userdata.name.replace(/\b\w/g, (c) => c.toUpperCase()) : "Not set"}
+                                    </p>
+                                </div>
+                            </div>
 
-                                    {/* Value box */}
-                                    <div
-                                        className={`p-2 rounded-lg bg-base-100 ${item.label === "Bio" ? "max-h-32 overflow-y-auto" : ""}`}
-                                    >
-                                        <p className="font-semibold text-info-content break-words">
-                                            {item.label === "Full Name" && typeof item.value === "string"
-                                                ? item.value.replace(/\b\w/g, (c) => c.toUpperCase())
-                                                : item.value}
-                                        </p>
+                            {/* Email */}
+                            <div className="bg-base-200 p-2 rounded-2xl shadow-sm">
+                                <p className="text-sm text-base-content mb-1">Email</p>
+                                <div className="p-2 rounded-lg bg-base-100">
+                                    <p className="font-semibold text-info-content break-words">{Userdata.email || "Not set"}</p>
+                                </div>
+                            </div>
+
+                            {/* Age */}
+                            <div className="bg-base-200 p-2 rounded-2xl shadow-sm">
+                                <p className="text-sm text-base-content mb-1">Age</p>
+                                <div className="p-2 rounded-lg bg-base-100">
+                                    <p className="font-semibold text-info-content">{Userdata.Age || "Not set"}</p>
+                                </div>
+                            </div>
+
+                            {/* Gender + Interested In side by side */}
+                            <div className="bg-base-200 p-2 rounded-2xl shadow-sm">
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <p className="text-sm text-base-content mb-1">Gender</p>
+                                        <div className="p-2 rounded-lg bg-base-100">
+                                            <p className="font-semibold text-info-content">{Userdata.gender || "Not set"}</p>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <p className="text-sm text-base-content mb-1">Interested In</p>
+                                        <div className="p-2 rounded-lg bg-base-100">
+                                            <p className="font-semibold text-info-content">{Userdata.interestedIn || "Not set"}</p>
+                                        </div>
                                     </div>
                                 </div>
-                            ))}
+                            </div>
 
-
-
+                            {/* Bio full width */}
+                            <div className="bg-base-200 p-2 rounded-2xl shadow-sm md:col-span-2">
+                                <p className="text-sm text-base-content mb-1">Bio</p>
+                                <div className="p-2 rounded-lg bg-base-100 max-h-32 overflow-y-auto">
+                                    <p className="font-semibold text-info-content break-words">
+                                        {Userdata.bio || "No bio"}
+                                    </p>
+                                </div>
+                            </div>
                             {/* Action Buttons */}
                             <div className="md:col-span-2 flex flex-col sm:flex-row gap-3 justify-end mt-4">
                                 <button
@@ -357,6 +449,7 @@ export default function Profile() {
                                 </div>
                             </div>
                         </div>
+
                     )}
                 </div>
             </div>

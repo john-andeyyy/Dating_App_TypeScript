@@ -1,5 +1,5 @@
 import { useMatchList } from "../context/MatchListContext";
-import List from "../components/List";
+import List from "../components/UserMatchList";
 
 export default function MatchList() {
     const { matchesList, loading, removeMatch } = useMatchList();
@@ -13,9 +13,9 @@ export default function MatchList() {
     }
 
     return (
-        <div className="flex flex-col h-screen bg-base-200">
+        <div className="flex flex-col h-screen  bg-gradient-to-r from-purple-400 via-pink-500 to-red-500">
             {/* bg-base-200 */}
-            <h1 className="p-4 pb-2 text-xl font-bold text-base-content">
+            <h1 className="p-4 pb-2 text-xl font-bold text-base-content bg-base-300" >
                 All current matches
             </h1>
 

@@ -64,7 +64,7 @@ export default function List({ id, name, age, bio, img, onRemoved }: ListProps) 
                     {name}
                 </h2>
                 <p className="text-sm text-base-content/70 font-normal">
-                    &nbsp;• {age} yrs old
+                    &nbsp; {age} yrs old
                 </p>
                 <p className="text-sm text-base-content/70 border rounded-xl p-2 max-h-30 sm:max-h-20 min-h-20 overflow-y-auto scrollbar-thin 
                 scrollbar-thumb-accent/50 scrollbar-track-transparent">{bio}</p>
