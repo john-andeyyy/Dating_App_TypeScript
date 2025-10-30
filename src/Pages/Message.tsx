@@ -29,6 +29,7 @@ export default function Message() {
     const [messages, setMessages] = useState<Record<string, MessageItem[]>>({});
     const [inputText, setInputText] = useState("");
     const [isModalOpen, setIsModalOpen] = useState(false);
+	const [isLoadingMatches, setIsLoadingMatches] = useState(false);
 
     const userId = user?._id as string | undefined;
     const messagesEndRef = useRef<HTMLDivElement | null>(null);
@@ -105,10 +106,11 @@ export default function Message() {
         };
     }, [userId, Baseurl]);
 
-    // matched list
+	// matched list
     useEffect(() => {
         const fetchMatchedList = async () => {
             if (!userId) return;
+			setIsLoadingMatches(true);
             try {
                 const res = await axios.get(`${Baseurl}/Msg/MatchedListMsg/${userId}`, {
                     headers: { Authorization: `Bearer ${accessToken}` },
@@ -117,6 +119,9 @@ export default function Message() {
             } catch (err) {
                 console.error("Error fetching matched list:", err);
             }
+			finally {
+				setIsLoadingMatches(false);
+			}
         };
         fetchMatchedList();
     }, [userId, Baseurl, accessToken]);
@@ -297,9 +302,14 @@ export default function Message() {
                     Matches
                 </h2>
 
-                {/* USER LIST */}
-                <div className="flex-grow overflow-y-auto p-3 space-y-2">
-                    {matchedList.length > 0 ? (
+				{/* USER LIST */}
+				<div className="flex-grow overflow-y-auto p-3 space-y-2">
+					{isLoadingMatches ? (
+						<div className="flex flex-col items-center justify-center py-10">
+							<span className="loading loading-spinner loading-lg text-accent" />
+							<span className="mt-3 text-sm text-base-content/70">Loading matches...</span>
+						</div>
+					) : matchedList.length > 0 ? (
                         matchedList.map((match) => (
                             <div
                                 key={match._id}
@@ -331,7 +341,7 @@ export default function Message() {
                                 </div>
                             </div>
                         ))
-                    ) : (
+					) : (
                         <div className="flex flex-col items-center justify-center py-10">
                             <div className="flex flex-col items-center gap-3 bg-base-200 rounded-xl p-6 shadow-md border border-base-300">
 

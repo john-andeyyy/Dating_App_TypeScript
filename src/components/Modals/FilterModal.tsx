@@ -16,6 +16,7 @@ interface AgeRangeModalProps {
     onToggleUseAgeFilter: (value: boolean) => void;
     radius: number;
     onRadiusChange: (value: number) => void;
+    interestedIn: string;
 }
 
 export default function AgeRangeModal({
@@ -27,11 +28,12 @@ export default function AgeRangeModal({
     useAgeFilter,
     onToggleUseAgeFilter,
     radius,
+    interestedIn,
 }: AgeRangeModalProps) {
     //  allow empty string for controlled <input type="number">
     const [MinAge, setMinAge] = useState<number | "">(minAge);
     const [MaxAge, setMaxAge] = useState<number | "">(maxAge);
-    const [InterestGender, setInterestGender] = useState<string>("All");
+    const [InterestGender, setInterestGender] = useState<string>(interestedIn || "All");
     const [localRadius, setLocalRadius] = useState<number>(radius || 20);
     const [error, setError] = useState<string>("");
 
@@ -42,6 +44,11 @@ export default function AgeRangeModal({
         setLocalRadius(radius || 20);
         setError("");
     }, [minAge, maxAge, radius, isOpen]);
+
+    // Sync local InterestGender when prop changes or modal opens
+    useEffect(() => {
+        setInterestGender(interestedIn || "All");
+    }, [interestedIn, isOpen]);
 
     //  Apply filters with proper validation
     const handleApply = () => {
@@ -121,7 +128,7 @@ export default function AgeRangeModal({
                                 setError("");
                                 setMinAge(value);
                             }}
-                            className={`input input-bordered w-full rounded-lg focus:border-pink-500 focus:ring focus:ring-pink-500/20 ${error && MinAge === "" ? "border-red-500" : ""
+                            className={`input w-full  ${error && MinAge === "" ? "border-red-500" : ""
                                 }`}
                         />
                     </div>
@@ -138,7 +145,7 @@ export default function AgeRangeModal({
                                     e.target.value === "" ? "" : Number(e.target.value)
                                 )
                             }
-                            className={`input input-bordered w-full rounded-lg focus:border-pink-500 focus:ring focus:ring-pink-500/20 ${error && MaxAge === "" ? "border-red-500" : ""
+                            className={`input input-bordered w-full rounded-lg  ${error && MaxAge === "" ? "border-red-500" : ""
                                 }`}
                         />
                     </div>

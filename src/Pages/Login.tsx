@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { ChangeEvent, FormEvent } from "react";
 
 import { Navigate, useNavigate } from "react-router-dom";
@@ -31,6 +31,12 @@ export default function Login() {
     const [profileImage, setProfileImage] = useState<string | null>(null);
     const [profileImageFile, setProfileImageFile] = useState<File | null>(null);
 
+
+    useEffect(() => {
+        if (errorMsg) {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+    }, [errorMsg]);
     const [formData, setFormData] = useState<FormData>({
         name: "",
         shortBio: "",
@@ -60,6 +66,7 @@ export default function Login() {
         setProfileImage(null);
         setProfileImageFile(null);
     };
+
 
     const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
@@ -154,6 +161,7 @@ export default function Login() {
             } catch (err: any) {
                 setErrorMsg(err.response?.data?.message || "Sign-up failed");
                 showToast("error", "Error signing up");
+                window.scrollTo({ top: 0, behavior: "smooth" });
             }
         }
 

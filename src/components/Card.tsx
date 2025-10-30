@@ -11,6 +11,7 @@ interface CardProps {
     latitude: string;
     currentLatitude: string;
     currentLongitude: string;
+    gender: string;
 }
 
 function getDistanceFromLatLonInKm(lat1: number, lon1: number, lat2: number, lon2: number): number {
@@ -41,6 +42,7 @@ export default function Card({
     longitude,
     currentLatitude,
     currentLongitude,
+    gender
 }: CardProps) {
     const distance = getDistanceFromLatLonInKm(
         parseFloat(currentLatitude),
@@ -77,7 +79,7 @@ export default function Card({
                         <h2 className="text-2xl sm:text-2xl font-bold capitalize drop-shadow-2xl mb-2 truncate tracking-tight">
                             {name}
                         </h2>
-                        <div className="flex items-center flex-wrap gap-3 text-xs sm:text-sm opacity-95">
+                        <div className="flex items-center flex-wrap gap-2 text-xs sm:text-sm opacity-95">
                             <span className="flex items-center gap-1.5 bg-white/10 backdrop-blur-sm px-2.5 py-1 rounded-full border border-white/20">
                                 {/* <BsCalendar3 className="text-primary" size={16} /> */}
                                 <span className="font-medium">{age} yrs old</span>
@@ -85,6 +87,10 @@ export default function Card({
                             <span className="flex items-center gap-1.5 bg-white/10 backdrop-blur-sm px-2.5 py-1 rounded-full border border-white/20">
                                 <IoLocationSharp className="text-red-400" size={16} />
                                 <span className="font-medium">{distance.toFixed(1)} km</span>
+                            </span>
+                            <span className="flex items-center gap-1.5 bg-white/10 backdrop-blur-sm px-2.5 py-1 rounded-full border border-white/20">
+                                {/* <BsCalendar3 className="text-primary" size={16} /> */}
+                                <span className="font-medium">{gender} </span>
                             </span>
                         </div>
                     </div>

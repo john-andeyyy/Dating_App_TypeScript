@@ -391,9 +391,12 @@ export default function Profile() {
                             <div className="bg-base-200 p-2 rounded-2xl shadow-sm">
                                 <p className="text-sm text-base-content mb-1">Email</p>
                                 <div className="p-2 rounded-lg bg-base-100">
-                                    <p className="font-semibold text-info-content break-words">{Userdata.email || "Not set"}</p>
+                                    <p className="font-semibold text-info-content break-words normal-case lowercase">
+                                        {Userdata.email || "Not set"}
+                                    </p>
                                 </div>
                             </div>
+
 
                             {/* Age */}
                             <div className="bg-base-200 p-2 rounded-2xl shadow-sm">

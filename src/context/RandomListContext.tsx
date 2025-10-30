@@ -19,6 +19,7 @@ interface Profile {
     email: string;
     longitude: string;
     latitude: string;
+    gender: string;
 }
 
 interface AgeFilter {
@@ -37,6 +38,7 @@ interface RandomListContextType {
     radius: number;
     updateRadius: (value: number) => void;
     Update_InterestedIn: (value: string) => void;
+    interestedIn: string;
     useAgeFilter: boolean;
     toggleUseAgeFilter: (value: boolean) => void;
 
@@ -66,10 +68,17 @@ export function RandomProvider({ children }: { children: ReactNode }) {
 
 
 
-    const [interestedIn, setinterestedIn] = useState<string>("All");
+    const [interestedIn, setinterestedIn] = useState<string>(() => {
+        // Prefer persisted user choice; fallback to backend user preference; default to "All"
+        const saved = localStorage.getItem("interestedIn");
+        if (saved) return saved;
+        const initial = (user as any)?.interestedIn;
+        return initial ? String(initial) : "All";
+    });
 
     const Update_InterestedIn = (value: string) => {
         setinterestedIn(value);
+        localStorage.setItem("interestedIn", value);
     }
 
     const [ageFilter, setAgeFilter] = useState<AgeFilter>({ min: 18, max: 35 });
@@ -84,6 +93,12 @@ export function RandomProvider({ children }: { children: ReactNode }) {
             return "https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small_2x/default-avatar-icon-of-social-media-user-vector.jpg";
         return `data:image/png;base64,${imageBase64}`;
     };
+
+    function capitalizeFirstLetter(str: string) {
+        if (!str) return "";
+        return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+    }
+
 
     const fetchProfiles = async (): Promise<void> => {
         if (!userId) return;
@@ -142,7 +157,9 @@ export function RandomProvider({ children }: { children: ReactNode }) {
                     email: user.Email,
                     longitude: user.Longitude,
                     latitude: user.Latitude,
+                    gender: capitalizeFirstLetter(user.gender),
                 }));
+
 
                 setProfiles(formattedProfiles.sort(() => Math.random() - 0.5));
                 console.log(formattedProfiles.sort(() => Math.random() - 0.5));
@@ -166,9 +183,21 @@ export function RandomProvider({ children }: { children: ReactNode }) {
         setProfiles((prev) => prev.filter((p) => p.id !== id));
     };
 
+    // Sync interestedIn from backend once on user change IF no local choice exists
+    useEffect(() => {
+        const saved = localStorage.getItem("interestedIn");
+        if (!saved) {
+            const userInterested = (user as any)?.interestedIn;
+            if (userInterested && String(userInterested) !== interestedIn) {
+                setinterestedIn(String(userInterested));
+            }
+        }
+    }, [userId]);
+
+    // Fetch profiles when filters or user change
     useEffect(() => {
         fetchProfiles();
-    }, [userId, ageFilter, radius, useAgeFilter]);
+    }, [userId, ageFilter, radius, useAgeFilter, interestedIn]);
 
     const updateAgeFilter = (min: number, max: number) => {
         setAgeFilter({ min, max });
@@ -187,6 +216,7 @@ export function RandomProvider({ children }: { children: ReactNode }) {
                 radius,
                 updateRadius,
                 Update_InterestedIn,
+                interestedIn,
                 useAgeFilter,
                 toggleUseAgeFilter
 

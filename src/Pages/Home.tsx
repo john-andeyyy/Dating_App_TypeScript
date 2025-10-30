@@ -29,7 +29,7 @@ interface FullScreenMessageProps {
 
 export default function Home() {
     const { user } = useAuth();
-    const { profiles, isEmpty, loading, ageFilter, updateAgeFilter, removeProfile, radius, updateRadius, refresh, Update_InterestedIn } = useRandomProvider();
+    const { profiles, isEmpty, loading, ageFilter, updateAgeFilter, removeProfile, radius, updateRadius, refresh, Update_InterestedIn, useAgeFilter, toggleUseAgeFilter, interestedIn } = useRandomProvider();
 
 
     const userId = user?._id;
@@ -42,16 +42,12 @@ export default function Home() {
     const [isDragging, setIsDragging] = useState(false);
     const [isLeaving, setIsLeaving] = useState(false);
     const [showModal, setShowModal] = useState(false);
-    const [useAgeFilter, setUseAgeFilter] = useState(
-        () => localStorage.getItem("useAgeFilter") === "true"
-    );
 
 
     const startPos = useRef<Position>({ x: 0, y: 0 });
 
     const handleToggleAgeFilter = (value: boolean) => {
-        setUseAgeFilter(value);
-        localStorage.setItem("useAgeFilter", String(value));
+        toggleUseAgeFilter(value);
     };
 
     const handleStart = (x: number, y: number) => {
@@ -214,6 +210,7 @@ export default function Home() {
                                                 longitude={profile.longitude}
                                                 currentLatitude={user?.Latitude || "0"}
                                                 currentLongitude={user?.Longitude || "0"}
+                                                gender={profile.gender}
                                             />
                                         </div>
 
@@ -232,6 +229,7 @@ export default function Home() {
                 useAgeFilter={useAgeFilter}
                 onToggleUseAgeFilter={handleToggleAgeFilter}
                 onRadiusChange={updateRadius}
+                interestedIn={interestedIn}
                 onApply={(min, max, radiusValue, InterestGender) => {
                     updateAgeFilter(min, max);
                     updateRadius(radiusValue);
