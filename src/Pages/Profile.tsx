@@ -195,7 +195,7 @@ export default function Profile() {
 
     return (
         <div className="p-4  flex justify-center  overflow-auto h-screen items-start md:items-center
-        bg-gradient-to-r from-purple-400 via-pink-500 to-red-500">  {/* base 200 */}
+        bg-gradient-to-r ">  {/* base 200 */}
             <div className="bg-base-100 shadow-xl rounded-2xl p-6 max-w-4xl w-full ">
                 <h1 className="text-3xl font-bold text-center mb-8 text-base-content">User Profile</h1>
 

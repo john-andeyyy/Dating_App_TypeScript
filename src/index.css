@@ -49,7 +49,7 @@
   --color-primary-content: oklch(100% 0 0);
   --color-secondary: oklch(21.455% 0.001 17.278);
   --color-secondary-content: oklch(100% 0 0);
-  --color-accent: oklch(26.861% 0 0);
+  --color-accent: oklch(70% 0.15 190);
   --color-accent-content: oklch(100% 0 0);
   --color-neutral: oklch(0% 0 0);
   --color-neutral-content: oklch(100% 0 0);
@@ -78,4 +78,3 @@ button {
 p::first-letter {
   text-transform: uppercase;
 }
-

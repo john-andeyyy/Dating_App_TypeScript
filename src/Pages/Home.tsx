@@ -124,14 +124,14 @@ export default function Home() {
     const blurEffect = Math.min(Math.abs(position.x) / 50, 5);
 
     return (
-        <div className="relative min-h-screen flex flex-col items-center px-4 bg-gradient-to-r from-purple-400 via-pink-500 to-red-500">
+        <div className="relative min-h-screen flex flex-col items-center px-4 bg-white">
 
             <div
                 className="absolute top-6 right-6 z-50 cursor-pointer p-2 rounded-full bg-white/20 hover:bg-white/40 transition text-gray-800"
                 onClick={() => setShowModal(true)}
                 title="Settings"
             >
-                <FaFilter className="text-accent" size={24} />
+                <FaFilter className="text-base-content" size={24} />
             </div>
 
             {isLoading && (
