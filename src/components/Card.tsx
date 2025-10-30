@@ -1,6 +1,6 @@
 import { AiFillCheckCircle } from "react-icons/ai";
 import { IoLocationSharp } from "react-icons/io5";
-import { BsCalendar3 } from "react-icons/bs";
+// import { BsCalendar3 } from "react-icons/bs";
 
 interface CardProps {
     name: string;
