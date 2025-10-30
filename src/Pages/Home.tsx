@@ -124,14 +124,14 @@ export default function Home() {
     const blurEffect = Math.min(Math.abs(position.x) / 50, 5);
 
     return (
-        <div className="relative min-h-screen flex flex-col items-center px-4 bg-white">
+        <div className="relative min-h-screen flex flex-col items-center px-4 ">
 
             <div
                 className="absolute top-6 right-6 z-50 cursor-pointer p-2 rounded-full bg-white/20 hover:bg-white/40 transition text-gray-800"
                 onClick={() => setShowModal(true)}
                 title="Settings"
             >
-                <FaFilter className="text-base-content" size={24} />
+                <FaFilter className="text-base-content" size={20} />
             </div>
 
             {isLoading && (
@@ -253,7 +253,7 @@ function FullScreenMessage({ title, subtitle, onRefresh }: FullScreenMessageProp
             <p className="text-lg text-gray-500">{subtitle}</p>
             {title != "Loading..." && (
                 <button
-                    className="btn btn-active btn-primary mt-5"
+                    className="btn btn-active btn-accent mt-5"
                     onClick={() => onRefresh()}
                 >
                     Refresh

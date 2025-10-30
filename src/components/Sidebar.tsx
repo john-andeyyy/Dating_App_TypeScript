@@ -1,21 +1,25 @@
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { FaHome, FaUsers, FaEnvelope, FaUser } from "react-icons/fa";
+import type { IconType } from "react-icons";
+
 
 interface MenuItem {
     name: string;
     path: string;
+    icon: IconType;
 }
 
 const menuItems: MenuItem[] = [
-    { name: "Home", path: "/Home" },
-    { name: "Match List", path: "/MatchList" },
-    { name: "Message", path: "/Message" },
-    { name: "User Profile", path: "/Profile" },
+    { name: "Home", path: "/Home", icon: FaHome },
+    { name: "Match List", path: "/MatchList", icon: FaUsers },
+    { name: "Message", path: "/Message", icon: FaEnvelope },
+    { name: "User Profile", path: "/Profile", icon: FaUser },
 ];
 
 export default function Sidebar() {
     const { logout } = useAuth();
-    const location = useLocation(); // ✅ to detect current path
+    const location = useLocation(); // to detect current path
 
     const handleLogout = () => {
         logout();
@@ -57,7 +61,7 @@ export default function Sidebar() {
                     {/* Menu Links */}
                     <nav className="flex-1 px-4 py-6 space-y-2">
                         {menuItems.map((item) => {
-                            const isActive = location.pathname === item.path; // ✅ check if current route
+                            const isActive = location.pathname === item.path; // check if current route
                             return (
                                 <Link
                                     key={item.path}
@@ -69,7 +73,11 @@ export default function Sidebar() {
                                             : "bg-white text-black border-accent hover:bg-accent hover:text-white"
                                         }`}
                                 >
-                                    {item.name}
+                                    <div className="flex items-center space-x-2">
+                                        <item.icon className="text-lg" />
+                                        <span>{item.name}</span>
+                                    </div>
+
                                 </Link>
                             );
                         })}

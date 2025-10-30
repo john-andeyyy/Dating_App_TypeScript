@@ -323,8 +323,8 @@ export default function Message() {
                                     </span>
                                     <span className="text-xs text-base-content/60 truncate">
                                         {match.lastMessage
-                                            ? match.lastMessage.length > 10
-                                                ? match.lastMessage.slice(0, 10) + "..."
+                                            ? match.lastMessage.length > 15
+                                                ? match.lastMessage.slice(0, 15) + "..."
                                                 : match.lastMessage
                                             : "No messages yet"}
                                     </span>

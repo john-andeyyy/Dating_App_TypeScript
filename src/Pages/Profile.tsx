@@ -17,6 +17,8 @@ interface UserData {
     photo: File | null;
 }
 
+
+
 interface PasswordData {
     Password: string;
     NewPass: string;
@@ -195,7 +197,7 @@ export default function Profile() {
 
     return (
         <div className="p-4  flex justify-center  overflow-auto h-screen items-start md:items-center
-        bg-gradient-to-r ">  {/* base 200 */}
+        bg-base-200">  {/* base 200 */}
             <div className="bg-base-100 shadow-xl rounded-2xl p-6 max-w-4xl w-full ">
                 <h1 className="text-3xl font-bold text-center mb-8 text-base-content">User Profile</h1>
 
@@ -422,7 +424,7 @@ export default function Profile() {
                             {/* Bio full width */}
                             <div className="bg-base-200 p-2 rounded-2xl shadow-sm md:col-span-2">
                                 <p className="text-sm text-base-content mb-1">Bio</p>
-                                <div className="p-2 rounded-lg bg-base-100 max-h-32 overflow-y-auto">
+                                <div className="p-2 rounded-lg bg-base-100 max-h-28 overflow-y-auto text-xs">
                                     <p className="font-semibold text-info-content break-words">
                                         {Userdata.bio || "No bio"}
                                     </p>

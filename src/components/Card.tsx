@@ -1,4 +1,6 @@
 import { AiFillCheckCircle } from "react-icons/ai";
+import { IoLocationSharp } from "react-icons/io5";
+import { BsCalendar3 } from "react-icons/bs";
 
 interface CardProps {
     name: string;
@@ -28,6 +30,7 @@ function getDistanceFromLatLonInKm(lat1: number, lon1: number, lat2: number, lon
 function deg2rad(deg: number): number {
     return deg * (Math.PI / 180);
 }
+
 export default function Card({
     name,
     bio,
@@ -46,40 +49,56 @@ export default function Card({
     );
 
     return (
-        <div className="relative w-70 max-w-sm sm:w-96 sm:max-w-md rounded-3xl 
-        overflow-hidden shadow-2xl bg-base-100/90 border border-base-300">
-            {/* Figure */}
-            <figure className="relative h-60 sm:h-64">
+        <div className="relative w-70 max-w-sm sm:w-96 sm:max-w-md rounded-3xl overflow-hidden shadow-2xl border border-gray-200/50 hover:border-primary/30 transition-all duration-300 hover:shadow-primary/10 hover:scale-[1.02]">
+            {/* Profile Image with Gradient Overlay */}
+            <div className="relative h-80 sm:h-96 overflow-hidden">
                 <img
                     src={image}
                     alt={name}
-                    className="w-full h-full object-cover brightness-[0.9]"
+                    className="w-full h-full object-cover transition-transform duration-500 ease-out"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
-                <div className="absolute bottom-3 left-4 right-4 text-white flex justify-between items-end">
-                    <div>
-                        <h2 className="text-xl sm:text-2xl font-bold flex items-center gap-1 capitalize drop-shadow-md">
+
+                {/* Enhanced Multi-layer gradient overlay */}
+                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-pink-600/40 to-purple-900/90" />
+                <div className="absolute inset-0 bg-gradient-to-t from-purple-900/60 via-transparent to-transparent" />
+
+
+
+                {/* Verified Badge at top */}
+                <div className="absolute top-4 right-4 bg-gradient-to-br from-white to-white/80 backdrop-blur-md rounded-full p-2.5 shadow-xl hover:scale-110 transition-transform duration-200 border border-white/50">
+                    <AiFillCheckCircle className="text-blue-500" size={22} />
+                </div>
+
+                {/* Bottom Info Section */}
+                <div className="absolute bottom-0 left-0 right-0 p-5 text-white bg-gradient-to-t from-black/80 via-black/60 to-transparent">
+                    {/* Name and age */}
+                    <div className="mb-3">
+                        <h2 className="text-2xl sm:text-2xl font-bold capitalize drop-shadow-2xl mb-2 truncate tracking-tight">
                             {name}
-                            <AiFillCheckCircle className="text-blue-400" />
                         </h2>
-                        <p className="text-xs sm:text-sm text-gray-300">
-                            {age} yrs • {distance.toFixed(1)} km away
+                        <div className="flex items-center flex-wrap gap-3 text-xs sm:text-sm opacity-95">
+                            <span className="flex items-center gap-1.5 bg-white/10 backdrop-blur-sm px-2.5 py-1 rounded-full border border-white/20">
+                                {/* <BsCalendar3 className="text-primary" size={16} /> */}
+                                <span className="font-medium">{age} yrs old</span>
+                            </span>
+                            <span className="flex items-center gap-1.5 bg-white/10 backdrop-blur-sm px-2.5 py-1 rounded-full border border-white/20">
+                                <IoLocationSharp className="text-red-400" size={16} />
+                                <span className="font-medium">{distance.toFixed(1)} km</span>
+                            </span>
+                        </div>
+                    </div>
+
+                    {/* Bio preview - scrollable */}
+                    <div className="bg-black/30 backdrop-blur-lg rounded-xl p-3 border border-white/20 shadow-inner max-h-20 overflow-y-auto scrollbar-thin scrollbar-thumb-white/40 scrollbar-track-transparent hover:scrollbar-thumb-white/60 transition-colors">
+                        <p className="text-sm leading-relaxed whitespace-pre-wrap text-gray-100">
+                            {bio || "No bio available"}
                         </p>
                     </div>
                 </div>
-            </figure>
 
-            {/* Bio */}
-            <div className="p-3 sm:p-4 flex flex-col gap-2 bg-base-100/90">
-                <p className="text-xs sm:text-sm font-semibold text-gray-500 uppercase tracking-wide">
-                    Bio
-                </p>
-                <div className="relative border border-base-300 rounded-xl p-2 
-                max-h-40 sm:max-h-30 min-h-20 overflow-y-auto scrollbar-thin scrollbar-thumb-accent/50 scrollbar-track-transparent">
-                    <p className="text-[13px] sm:text-[15px] leading-relaxed text-base-content whitespace-pre-wrap">
-                        {bio || "No bio available."}
-                    </p>
-                </div>
+                {/* Decorative corner accents */}
+                <div className="absolute top-0 left-0 w-40 h-40 bg-gradient-to-br from-primary/30 to-transparent rounded-br-full blur-xl" />
+                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-blue-500/20 to-transparent rounded-bl-full blur-xl" />
             </div>
         </div>
     );

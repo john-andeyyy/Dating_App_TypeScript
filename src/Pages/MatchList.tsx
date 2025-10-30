@@ -1,5 +1,6 @@
 import { useMatchList } from "../context/MatchListContext";
 import List from "../components/UserMatchList";
+import { HiOutlineUserGroup } from "react-icons/hi";
 
 export default function MatchList() {
     const { matchesList, loading, removeMatch } = useMatchList();
@@ -13,24 +14,18 @@ export default function MatchList() {
     }
 
     return (
-        <div className="flex flex-col h-screen ">
-            {/* bg-base-200 */}
-            <h1 className="p-4 pb-2 text-xl font-bold text-base-content bg-base-300" >
-                All current matches
-            </h1>
+        <div className="flex flex-col h-screen bg-base-200">
+            <header className="p-6 pb-3  shadow flex items-center gap-2">
+                <HiOutlineUserGroup className="text-3xl mr-2 " />
+                <h1 className="text-2xl md:text-3xl font-bold tracking-tight drop-shadow-md ">
+                    Your Matches
+                </h1>
+            </header>
 
-            {/* //! List of matches or no matches found message */}
-            <div className="grow overflow-y-auto p-4">
+            <div className="grow overflow-y-auto p-4 max-w-6xl mx-auto w-full">
                 {matchesList.length > 0 ? (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
-                        {matchesList.map((match: {
-                            id: string;
-                            _id?: string;
-                            name: string;
-                            age: string | number;
-                            bio: string;
-                            img: string;
-                        }) => (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {matchesList.map((match) => (
                             <List
                                 key={match._id ?? match.id}
                                 id={match.id}
@@ -43,13 +38,12 @@ export default function MatchList() {
                         ))}
                     </div>
                 ) : (
-                    <div className="flex flex-col items-center justify-center h-full text-info-content">
-                        <h2 className="text-3xl font-bold mb-4">No matches found</h2>
-                        <p className="text-lg text-gray-100">Start to match</p>
+                    <div className="flex flex-col items-center justify-center h-[75vh] text-info-content">
+                        <h2 className="text-2xl font-semibold mb-2 text-base-content">No matches found</h2>
+                        <p className="text-lg text-base-content/70">Start matching with new people!</p>
                     </div>
                 )}
             </div>
-
         </div>
     );
 }
