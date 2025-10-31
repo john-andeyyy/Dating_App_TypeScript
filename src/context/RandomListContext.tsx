@@ -41,6 +41,7 @@ interface RandomListContextType {
     interestedIn: string;
     useAgeFilter: boolean;
     toggleUseAgeFilter: (value: boolean) => void;
+    userLocation: { lat: number; lng: number };
 
 
 }
@@ -83,6 +84,7 @@ export function RandomProvider({ children }: { children: ReactNode }) {
 
     const [ageFilter, setAgeFilter] = useState<AgeFilter>({ min: 18, max: 35 });
     const [radius, setRadius] = useState(20);
+    const [userLocation, setUserLocation] = useState<{ lat: number; lng: number }>({ lat: 0, lng: 0 });
 
     const updateRadius = (value: number) => {
         setRadius(value);
@@ -114,16 +116,33 @@ export function RandomProvider({ children }: { children: ReactNode }) {
                         (position) => {
                             userLat = position.coords.latitude;
                             userLng = position.coords.longitude;
+                            setUserLocation({ lat: userLat, lng: userLng });
                             resolve();
                         },
                         (error) => {
                             console.warn("Geolocation failed:", error.message);
+                            // Fallback to saved location
+                            const savedLat = parseFloat((user as any)?.Latitude || "0");
+                            const savedLng = parseFloat((user as any)?.Longitude || "0");
+                            if (savedLat !== 0 || savedLng !== 0) {
+                                userLat = savedLat;
+                                userLng = savedLng;
+                                setUserLocation({ lat: userLat, lng: userLng });
+                            }
                             resolve(); // continue kahit walang location
                         }
                     );
                 });
             } catch (err) {
                 console.warn("Geolocation error:", err);
+                // Fallback to saved location on error
+                const savedLat = parseFloat((user as any)?.Latitude || "0");
+                const savedLng = parseFloat((user as any)?.Longitude || "0");
+                if (savedLat !== 0 || savedLng !== 0) {
+                    userLat = savedLat;
+                    userLng = savedLng;
+                    setUserLocation({ lat: userLat, lng: userLng });
+                }
             }
 
 
@@ -218,7 +237,8 @@ export function RandomProvider({ children }: { children: ReactNode }) {
                 Update_InterestedIn,
                 interestedIn,
                 useAgeFilter,
-                toggleUseAgeFilter
+                toggleUseAgeFilter,
+                userLocation
 
             }}
         >

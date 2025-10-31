@@ -29,7 +29,7 @@ interface FullScreenMessageProps {
 
 export default function Home() {
     const { user } = useAuth();
-    const { profiles, isEmpty, loading, ageFilter, updateAgeFilter, removeProfile, radius, updateRadius, refresh, Update_InterestedIn, useAgeFilter, toggleUseAgeFilter, interestedIn } = useRandomProvider();
+    const { profiles, isEmpty, loading, ageFilter, updateAgeFilter, removeProfile, radius, updateRadius, refresh, Update_InterestedIn, useAgeFilter, toggleUseAgeFilter, interestedIn, userLocation } = useRandomProvider();
 
 
     const userId = user?._id;
@@ -208,8 +208,8 @@ export default function Home() {
                                                 age={profile.age}
                                                 latitude={profile.latitude}
                                                 longitude={profile.longitude}
-                                                currentLatitude={user?.Latitude || "0"}
-                                                currentLongitude={user?.Longitude || "0"}
+                                                currentLatitude={userLocation.lat.toString()}
+                                                currentLongitude={userLocation.lng.toString()}
                                                 gender={profile.gender}
                                             />
                                         </div>
