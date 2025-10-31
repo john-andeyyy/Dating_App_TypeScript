@@ -22,13 +22,12 @@ export default function List({ id, name, age, bio, img, onRemoved }: ListProps) 
     //! Function to handle removing a match
     const handleRemoveClick = async () => {
         try {
-            const res = await axios.put(`${Baseurl}/Matching/unMatch`, {
+            await axios.put(`${Baseurl}/Matching/unMatch`, {
                 Userid: userId,
                 MatchingId: id,
             }, {
                 headers: { Authorization: `Bearer ${accessToken}` },
             });
-           // console.log("Remove response:", res.data);
 
             if (onRemoved) onRemoved(id);
 
