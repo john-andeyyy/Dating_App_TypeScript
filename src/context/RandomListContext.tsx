@@ -7,7 +7,7 @@ import {
 } from "react";
 import type { ReactNode } from "react";
 
-import { showToast } from "../components/ToastNotif";
+// import { showToast } from "../components/ToastNotif";
 import { useAuth } from "./AuthContext";
 
 interface Profile {
@@ -54,7 +54,6 @@ export function RandomProvider({ children }: { children: ReactNode }) {
     const Baseurl = import.meta.env.VITE_BASEURL;
     const { user } = useAuth();
     const userId = user?._id;
-    const accessToken = localStorage.getItem("AccessToken");
 
     const [profiles, setProfiles] = useState<Profile[]>([]);
     const [isEmpty, setIsEmpty] = useState(false);
@@ -111,28 +110,32 @@ export function RandomProvider({ children }: { children: ReactNode }) {
             let userLat = 0;
             let userLng = 0;
             try {
-                await new Promise<void>((resolve) => {
-                    navigator.geolocation.getCurrentPosition(
-                        (position) => {
-                            userLat = position.coords.latitude;
-                            userLng = position.coords.longitude;
-                            setUserLocation({ lat: userLat, lng: userLng });
-                            resolve();
-                        },
-                        (error) => {
-                            console.warn("Geolocation failed:", error.message);
-                            // Fallback to saved location
-                            const savedLat = parseFloat((user as any)?.Latitude || "0");
-                            const savedLng = parseFloat((user as any)?.Longitude || "0");
-                            if (savedLat !== 0 || savedLng !== 0) {
-                                userLat = savedLat;
-                                userLng = savedLng;
+                const getPosition = async (): Promise<void> => {
+                    await new Promise<void>((resolve) => {
+                        navigator.geolocation.getCurrentPosition(
+                            (position) => {
+                                userLat = position.coords.latitude;
+                                userLng = position.coords.longitude;
                                 setUserLocation({ lat: userLat, lng: userLng });
+                                resolve();
+                            },
+                            (error) => {
+                                console.warn("Geolocation failed:", error.message);
+                                // Fallback to saved location
+                                const savedLat = parseFloat((user as any)?.Latitude || "0");
+                                const savedLng = parseFloat((user as any)?.Longitude || "0");
+                                if (savedLat !== 0 || savedLng !== 0) {
+                                    userLat = savedLat;
+                                    userLng = savedLng;
+                                    setUserLocation({ lat: userLat, lng: userLng });
+                                }
+                                resolve(); // continue kahit walang location
                             }
-                            resolve(); // continue kahit walang location
-                        }
-                    );
-                });
+                        );
+                    });
+                };
+
+                await getPosition();
             } catch (err) {
                 console.warn("Geolocation error:", err);
                 // Fallback to saved location on error
@@ -154,7 +157,6 @@ export function RandomProvider({ children }: { children: ReactNode }) {
 
             //  request para mag-send ng location + radius sa body
             const res = await axios.get(url, {
-                headers: { Authorization: `Bearer ${accessToken}` },
                 params: {
                     latitude: userLat,
                     longitude: userLng,
@@ -190,7 +192,7 @@ export function RandomProvider({ children }: { children: ReactNode }) {
             }
         } catch (err: any) {
             if (err.response?.status === 404) setIsEmpty(true);
-            else showToast("error", err.message);
+            // else showToast("error", err.message);
         } finally {
             setLoading(false);
         }

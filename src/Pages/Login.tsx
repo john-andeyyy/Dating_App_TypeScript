@@ -23,8 +23,6 @@ export default function Login() {
     const { user, login } = useAuth();
     const navigate = useNavigate();
 
-    if (user) return <Navigate to="/Home" replace />;
-
     const [isLoading, setIsLoading] = useState(false);
     const [isLogin, setIsLogin] = useState(true);
     const [errorMsg, setErrorMsg] = useState("");
@@ -87,19 +85,15 @@ export default function Login() {
     };
 
     // Get user's current geolocation
-    const getLocation = (): Promise<{ lat: string; lng: string }> => {
-        return new Promise((resolve, reject) => {
-            if (!navigator.geolocation) return reject("Not supported");
-
-            navigator.geolocation.getCurrentPosition(
-                (pos) =>
-                    resolve({
-                        lat: pos.coords.latitude.toString(),
-                        lng: pos.coords.longitude.toString(),
-                    }),
-                (err) => reject(err)
-            );
+    const getLocation = async (): Promise<{ lat: string; lng: string }> => {
+        if (!navigator.geolocation) throw new Error("Not supported");
+        const pos = await new Promise<GeolocationPosition>((resolve, reject) => {
+            navigator.geolocation.getCurrentPosition(resolve, reject);
         });
+        return {
+            lat: pos.coords.latitude.toString(),
+            lng: pos.coords.longitude.toString(),
+        };
     };
 
     //! Handle form submission for login and sign-up
@@ -160,13 +154,16 @@ export default function Login() {
                 cleanForm();
             } catch (err: any) {
                 setErrorMsg(err.response?.data?.message || "Sign-up failed");
-                showToast("error", "Error signing up");
+                // showToast("error", "Error signing up");
                 window.scrollTo({ top: 0, behavior: "smooth" });
             }
         }
 
         setIsLoading(false);
     };
+
+    // Redirect after hooks are declared to keep hook order consistent
+    if (user) return <Navigate to="/Home" replace />;
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-base-200 p-4">
