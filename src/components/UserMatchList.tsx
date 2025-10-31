@@ -28,7 +28,7 @@ export default function List({ id, name, age, bio, img, onRemoved }: ListProps) 
             }, {
                 headers: { Authorization: `Bearer ${accessToken}` },
             });
-            console.log("Remove response:", res.data);
+           // console.log("Remove response:", res.data);
 
             if (onRemoved) onRemoved(id);
 

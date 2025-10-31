@@ -52,7 +52,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
             });
             setUserData(res.data.Data);
             setUser(res.data.Data);
-            console.log(res.data.Data);
+            // console.log(res.data.Data);
             
 
         } catch (error: any) {
@@ -81,7 +81,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
                         const newAccessToken = newTokenRes.data.accessToken;
                         localStorage.setItem("AccessToken", newAccessToken);
                         await login();
-                        console.log("Access token refreshed");
+                        // console.log("Access token refreshed");
                     }
                 } catch {
                     logout();

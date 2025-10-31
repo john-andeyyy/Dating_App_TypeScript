@@ -150,7 +150,7 @@ export function RandomProvider({ children }: { children: ReactNode }) {
                 ? `${Baseurl}/Matching/PeopleList/${userId}?minAge=${ageFilter.min}&maxAge=${ageFilter.max}`
                 : `${Baseurl}/Matching/PeopleList/${userId}`;
 
-            console.log("useAgeFilter: ", useAgeFilter);
+            // console.log("useAgeFilter: ", useAgeFilter);
 
             //  request para mag-send ng location + radius sa body
             const res = await axios.get(url, {
@@ -164,7 +164,7 @@ export function RandomProvider({ children }: { children: ReactNode }) {
             });
 
 
-            console.log("url:", url);
+            // console.log("url:", url);
 
             if (res.data?.data?.length && res.status === 200) {
                 const formattedProfiles: Profile[] = res.data.data.map((user: any) => ({
@@ -181,7 +181,7 @@ export function RandomProvider({ children }: { children: ReactNode }) {
 
 
                 setProfiles(formattedProfiles.sort(() => Math.random() - 0.5));
-                console.log(formattedProfiles.sort(() => Math.random() - 0.5));
+                // console.log(formattedProfiles.sort(() => Math.random() - 0.5));
 
                 setIsEmpty(false);
             } else {

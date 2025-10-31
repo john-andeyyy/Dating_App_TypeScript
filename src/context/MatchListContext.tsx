@@ -65,7 +65,7 @@ export const MatchListProvider = ({ children }: MatchListProviderProps) => {
         };
 
         const handleUserUnmatched = (data: { userId: string }) => {
-            console.log("Received userUnmatched:", data);
+            // console.log("Received userUnmatched:", data);
             setMatchesList((prev) => prev.filter((m) => m.id !== data.userId));
         };
 
