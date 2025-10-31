@@ -1,7 +1,7 @@
-# Basic Dating App – MatchConnect
+# Basic Dating App – Sparked
 A simple web-based dating app that allows users to create profiles, discover and match with other users, and chat after matching. Built with React and deployed on Vercel.
 # Description
-MatchConnect is a basic dating app designed for smooth desktop use.
+Sparked is a basic dating app designed for smooth desktop use.
 Users can:
 Sign up using email
 Create a profile with personal details and a photo
@@ -47,7 +47,7 @@ Once matched, a private chat unlocks. The app also includes profile editing, a m
 * User Discovery & Matching
 
 # Optional / Bonus Features (Implemented)
-* Filters: age, distance
+* Filters: age, distance, gender interest
 * Allow users to unmatch (removes chat access)
 * Browser-based push notification simulation for new matches/messages
 * Light/Dark mode UI toggle

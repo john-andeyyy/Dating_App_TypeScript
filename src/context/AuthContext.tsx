@@ -68,7 +68,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
         const accessToken = localStorage.getItem("AccessToken");
         if (!accessToken) return;
         try {
-            await axios.get(`${Baseurl}/user/auth/CheckToken`);
+            await axios.get(`${Baseurl}/user/auth/CheckToken`, {
+                headers: { Authorization: `Bearer ${accessToken}` },
+            });
         } catch {
             // Interceptor will handle refresh/logout; avoid duplicate actions here
         }
